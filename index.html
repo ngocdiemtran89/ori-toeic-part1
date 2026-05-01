@@ -992,6 +992,79 @@
     .overview-grid { grid-template-columns: 1fr 1fr; }
     .score-bar { flex-wrap: wrap; gap: 10px; }
   }
+
+  /* PHOTO TYPE TIPS */
+  .photo-tips-section { margin: 40px 0; }
+  .photo-tip-card {
+    background: white; border-radius: 20px; overflow: hidden;
+    box-shadow: var(--shadow-md); border: 1px solid rgba(0,87,184,0.08);
+    margin-bottom: 20px; transition: all 0.3s ease;
+  }
+  .photo-tip-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
+  .photo-tip-header {
+    padding: 22px 28px; cursor: pointer; display: flex;
+    align-items: center; justify-content: space-between; transition: background 0.3s;
+  }
+  .photo-tip-header:hover { background: var(--ori-blue-ghost); }
+  .photo-tip-header-left { display: flex; align-items: center; gap: 16px; }
+  .photo-tip-icon {
+    width: 56px; height: 56px; border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px; flex-shrink: 0;
+  }
+  .photo-tip-icon.one-person { background: linear-gradient(135deg, #DBEAFE, #BFDBFE); }
+  .photo-tip-icon.multi-person { background: linear-gradient(135deg, #D1FAE5, #A7F3D0); }
+  .photo-tip-icon.object-scene { background: linear-gradient(135deg, #FEF3C7, #FDE68A); }
+  .photo-tip-title { font-family: 'Space Grotesk', sans-serif; font-size: 18px; font-weight: 700; color: var(--ori-blue-dark); }
+  .photo-tip-subtitle { font-size: 13px; color: var(--ori-text-light); margin-top: 2px; }
+  .photo-tip-toggle {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--ori-blue-pale); display: flex;
+    align-items: center; justify-content: center;
+    font-size: 18px; color: var(--ori-blue);
+    transition: transform 0.3s ease; flex-shrink: 0;
+  }
+  .photo-tip-card.active .photo-tip-toggle { transform: rotate(180deg); background: var(--ori-blue); color: white; }
+  .photo-tip-body { max-height: 0; overflow: hidden; transition: max-height 0.5s cubic-bezier(0.4,0,0.2,1); }
+  .photo-tip-card.active .photo-tip-body { max-height: 2000px; }
+  .photo-tip-content { padding: 0 28px 28px; }
+  .tip-rule {
+    display: flex; gap: 14px; margin-bottom: 16px; padding: 16px;
+    border-radius: 14px; border: 1px solid rgba(0,87,184,0.06);
+    background: var(--ori-blue-ghost); transition: all 0.3s;
+  }
+  .tip-rule:hover { border-color: var(--ori-blue-light); background: var(--ori-blue-pale); }
+  .tip-rule-num {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--ori-blue), var(--ori-accent));
+    color: white; display: flex; align-items: center; justify-content: center;
+    font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 14px; flex-shrink: 0;
+  }
+  .tip-rule-text { font-size: 14px; line-height: 1.8; color: var(--ori-text); }
+  .tip-rule-text strong { color: var(--ori-blue-dark); }
+  .tip-ex {
+    margin-top: 8px; padding: 10px 14px; background: white;
+    border-radius: 10px; font-size: 13px; border-left: 3px solid var(--ori-blue-light);
+  }
+  .tip-ex .xw { color: var(--ori-error); font-weight: 600; }
+  .tip-ex .xr { color: var(--ori-success); font-weight: 600; }
+  .tip-ex .xn { color: var(--ori-text-light); font-style: italic; font-size: 12px; margin-top: 4px; }
+  .tip-alert {
+    display: flex; gap: 12px; padding: 16px; border-radius: 14px;
+    margin-top: 16px; align-items: flex-start;
+  }
+  .tip-alert.warning { background: #FEF3C7; border: 1px solid #FDE68A; }
+  .tip-alert.success { background: #D1FAE5; border: 1px solid #A7F3D0; }
+  .tip-alert.danger { background: #FEE2E2; border: 1px solid #FECACA; }
+  .tip-alert-icon { font-size: 22px; flex-shrink: 0; }
+  .tip-alert-text { font-size: 13.5px; line-height: 1.7; color: var(--ori-text); }
+  .tip-alert-text strong { color: var(--ori-blue-dark); }
+  @media (max-width: 600px) {
+    .photo-tip-header { padding: 16px 20px; }
+    .photo-tip-content { padding: 0 20px 20px; }
+    .photo-tip-icon { width: 44px; height: 44px; font-size: 22px; }
+    .photo-tip-title { font-size: 16px; }
+  }
 </style>
 </head>
 <body>
@@ -1319,36 +1392,94 @@
     </table>
   </div>
 
+  <!-- PHOTO TYPE TIPS -->
+  <div class="section photo-tips-section">
+    <div class="section-label">📸 Mẹo Vàng</div>
+    <div class="section-title">Mẹo Theo Dạng Ảnh — Chìa Khóa 6/6</div>
+    <div class="section-desc">Phân loại ảnh để biết chính xác cần nghe gì — 3 dạng ảnh, 3 chiến lược riêng!</div>
+
+    <div class="photo-tip-card active" id="tip-one-person">
+      <div class="photo-tip-header" onclick="togglePhotoTip('tip-one-person')">
+        <div class="photo-tip-header-left">
+          <div class="photo-tip-icon one-person">🧑</div>
+          <div>
+            <div class="photo-tip-title">Ảnh 1 Người</div>
+            <div class="photo-tip-subtitle">~40% đề thi — Tập trung ĐỘNG TỪ + TÂN NGỮ</div>
+          </div>
+        </div>
+        <div class="photo-tip-toggle">▼</div>
+      </div>
+      <div class="photo-tip-body">
+        <div class="photo-tip-content">
+          <div class="tip-rule"><div class="tip-rule-num">1</div><div class="tip-rule-text"><strong>Chú ý ĐỘNG TỪ (Verb)</strong> — Câu đúng là câu có <strong>động từ chính xác</strong> với hành động trong ảnh.<div class="tip-ex"><div class="xr">✓ "She is <strong>typing</strong> on a keyboard."</div><div class="xw">✗ "She is <strong>writing</strong> on paper." → Sai động từ!</div></div></div></div>
+          <div class="tip-rule"><div class="tip-rule-num">2</div><div class="tip-rule-text"><strong>Chú ý TÂN NGỮ (Object)</strong> — Động từ đúng nhưng tân ngữ sai → vẫn SAI!<div class="tip-ex"><div class="xr">✓ "The man is holding a <strong>cup</strong>."</div><div class="xw">✗ "The man is holding a <strong>book</strong>." → Sai tân ngữ!</div></div></div></div>
+          <div class="tip-rule"><div class="tip-rule-num">3</div><div class="tip-rule-text"><strong>Công thức vàng:</strong> Câu đúng = <strong>Động từ ĐÚNG</strong> + <strong>Tân ngữ ĐÚNG</strong>. Chỉ cần 1 sai → loại trừ ngay!</div></div>
+          <div class="tip-rule"><div class="tip-rule-num">4</div><div class="tip-rule-text">Chú ý <strong>tư thế cơ thể:</strong> standing, sitting, leaning, bending, reaching, kneeling...</div></div>
+          <div class="tip-alert warning"><div class="tip-alert-icon">⚠️</div><div class="tip-alert-text"><strong>Bẫy thường gặp:</strong> ETS hay dùng câu mô tả hành động giống nhau nhưng <strong>đối tượng khác</strong>. VD: ảnh người cầm laptop → bẫy "She is carrying a briefcase."</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="photo-tip-card" id="tip-multi-person">
+      <div class="photo-tip-header" onclick="togglePhotoTip('tip-multi-person')">
+        <div class="photo-tip-header-left">
+          <div class="photo-tip-icon multi-person">👥</div>
+          <div>
+            <div class="photo-tip-title">Ảnh Nhiều Người</div>
+            <div class="photo-tip-subtitle">~30% đề thi — Tìm HÀNH ĐỘNG CHUNG + Kiểm tra TÂN NGỮ</div>
+          </div>
+        </div>
+        <div class="photo-tip-toggle">▼</div>
+      </div>
+      <div class="photo-tip-body">
+        <div class="photo-tip-content">
+          <div class="tip-rule"><div class="tip-rule-num">1</div><div class="tip-rule-text"><strong>Tìm hành động CHUNG</strong> — Tất cả đang làm gì giống nhau?<div class="tip-ex"><div class="xr">✓ "They are <strong>sitting around a table</strong>."</div><div class="xw">✗ "They are <strong>standing in line</strong>." → Sai hành động!</div></div></div></div>
+          <div class="tip-rule"><div class="tip-rule-num">2</div><div class="tip-rule-text"><strong>Nếu mỗi người làm khác nhau</strong> → đáp án mô tả <strong>hành động chung nhất</strong> hoặc mô tả <strong>1 người cụ thể</strong> ("One of them...", "A man is...")</div></div>
+          <div class="tip-rule"><div class="tip-rule-num">3</div><div class="tip-rule-text"><strong>Kiểm tra Object:</strong> Đồ vật có khớp với mô tả không? Tay cầm gì?<div class="tip-ex"><div class="xr">✓ "They are examining <strong>documents</strong>."</div><div class="xw">✗ "They are examining <strong>a map</strong>." → Object sai!</div></div></div></div>
+          <div class="tip-rule"><div class="tip-rule-num">4</div><div class="tip-rule-text"><strong>Chú ý số lượng:</strong> "Some people" vs "All people" vs "One of them" — đếm xem mấy người đang làm hành động đó.</div></div>
+          <div class="tip-alert success"><div class="tip-alert-icon">💡</div><div class="tip-alert-text"><strong>Mẹo Pro:</strong> Khi thấy ảnh nhiều người, hãy tự nói: "<strong>Họ đang ở đâu?</strong>" và "<strong>Họ đang làm gì CHUNG?</strong>" trước khi nghe.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="photo-tip-card" id="tip-object-scene">
+      <div class="photo-tip-header" onclick="togglePhotoTip('tip-object-scene')">
+        <div class="photo-tip-header-left">
+          <div class="photo-tip-icon object-scene">🏞️</div>
+          <div>
+            <div class="photo-tip-title">Ảnh Tả Vật / Phong Cảnh</div>
+            <div class="photo-tip-subtitle">~30% đề thi — Loại trừ NGƯỜI + Cẩn thận V-ing / Being</div>
+          </div>
+        </div>
+        <div class="photo-tip-toggle">▼</div>
+      </div>
+      <div class="photo-tip-body">
+        <div class="photo-tip-content">
+          <div class="tip-rule"><div class="tip-rule-num">1</div><div class="tip-rule-text"><strong>Có người = SAI!</strong> Ảnh không có người mà đáp án nhắc đến he, she, they, people, workers... → <strong>loại ngay!</strong><div class="tip-ex"><div class="xw">✗ "A man is standing near the building." → Không có người!</div><div class="xr">✓ "The building is surrounded by trees."</div></div></div></div>
+          <div class="tip-rule"><div class="tip-rule-num">2</div><div class="tip-rule-text"><strong>Có V-ing / Being = thường SAI!</strong> Ảnh vật/cảnh dùng "is being V-ed" hoặc "is V-ing" → <strong>thường là bẫy!</strong> Vì vật không tự hành động.<div class="tip-ex"><div class="xw">✗ "The car <strong>is being parked</strong>." → Ai đang đậu? Không thấy!</div><div class="xw">✗ "The door <strong>is being opened</strong>." → Không ai mở!</div><div class="xr">✓ "The car <strong>is parked</strong> in front of a building." → Trạng thái</div></div></div></div>
+          <div class="tip-rule"><div class="tip-rule-num">3</div><div class="tip-rule-text"><strong>Ngoại lệ quan trọng:</strong> Một số vật CÓ THỂ dùng V-ing vì tự thực hiện:<div class="tip-ex"><div class="xr">✓ "The boat <strong>is floating</strong> on the water." → Tự nổi!</div><div class="xr">✓ "The flag <strong>is waving</strong> in the wind." → Tự bay!</div><div class="xr">✓ "The river <strong>is flowing</strong> through the valley."</div><div class="xr">✓ "The sun <strong>is shining</strong> brightly."</div><div class="xn">→ Nếu chủ ngữ tự thực hiện được → V-ing vẫn đúng</div></div></div></div>
+          <div class="tip-rule"><div class="tip-rule-num">4</div><div class="tip-rule-text"><strong>Tập trung VỊ TRÍ + TRẠNG THÁI:</strong> Dùng giới từ!<div class="tip-ex"><div class="xr">✓ "The chairs are <strong>arranged around</strong> the table."</div><div class="xr">✓ "Some boxes are <strong>stacked on top of</strong> each other."</div><div class="xr">✓ "The bridge <strong>extends across</strong> the river."</div></div></div></div>
+          <div class="tip-alert danger"><div class="tip-alert-icon">🚨</div><div class="tip-alert-text"><strong>Bẫy kinh điển:</strong> Ảnh bến tàu không người → bẫy: "Workers are loading cargo onto the ship." → Không thấy workers! Nhớ: <strong>không người → loại mọi câu nhắc người!</strong></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- GOLDEN TIPS -->
   <div class="tips-box">
     <h3>💎 Bí Kíp "Phản Xạ" Từ Cô Katie</h3>
     <ul class="tips-list">
-      <li>
-        <span class="tip-check">✓</span>
-        <span>Luôn nhìn ảnh trước 5 giây — hỏi nhanh: <strong>Ai? Làm gì? Ở đâu?</strong></span>
-      </li>
-      <li>
-        <span class="tip-check">✓</span>
-        <span>Ảnh không có người → tập trung mô tả <strong>vị trí & trạng thái</strong> của đồ vật</span>
-      </li>
-      <li>
-        <span class="tip-check">✓</span>
-        <span>Nghe CẢ CÂU, đừng bao giờ chọn chỉ vì nghe thấy 1 từ quen</span>
-      </li>
-      <li>
-        <span class="tip-check">✓</span>
-        <span>Phân biệt rõ: <strong>đang làm (be + V-ing)</strong> vs <strong>đã xong (be + V3/ed)</strong></span>
-      </li>
-      <li>
-        <span class="tip-check">✓</span>
-        <span>Không suy diễn — chỉ chọn những gì <strong>MẮT THẤY</strong> trong ảnh</span>
-      </li>
-      <li>
-        <span class="tip-check">✓</span>
-        <span>Luyện mỗi ngày 6 câu Part 1 trong 30 ngày → phản xạ tự nhiên!</span>
-      </li>
+      <li><span class="tip-check">✓</span><span>Luôn nhìn ảnh trước 5 giây — hỏi nhanh: <strong>Ai? Làm gì? Ở đâu?</strong></span></li>
+      <li><span class="tip-check">✓</span><span><strong>1 người:</strong> nghe chính xác ĐỘNG TỪ + TÂN NGỮ — cả 2 phải đúng!</span></li>
+      <li><span class="tip-check">✓</span><span><strong>Nhiều người:</strong> tìm hành động CHUNG, kiểm tra Object đúng/sai</span></li>
+      <li><span class="tip-check">✓</span><span><strong>Ảnh vật/cảnh:</strong> có người = sai, có V-ing/Being = thường sai (trừ ngoại lệ)</span></li>
+      <li><span class="tip-check">✓</span><span>Phân biệt rõ: <strong>đang làm (be + V-ing)</strong> vs <strong>đã xong (be + V3/ed)</strong></span></li>
+      <li><span class="tip-check">✓</span><span>Nghe CẢ CÂU, đừng chọn chỉ vì nghe 1 từ quen</span></li>
+      <li><span class="tip-check">✓</span><span>Không suy diễn — chỉ chọn những gì <strong>MẮT THẤY</strong> trong ảnh</span></li>
+      <li><span class="tip-check">✓</span><span>Luyện 6 câu/ngày trong 30 ngày → phản xạ tự nhiên!</span></li>
     </ul>
   </div>
+
 
   <!-- =============================== -->
   <!-- 🎮 VOCAB QUIZ GAMES SECTION     -->
@@ -1624,6 +1755,11 @@
   let selectedAnswers = {};
   let checkedQuestions = {};
   let score = 0;
+
+  function togglePhotoTip(id) {
+    const card = document.getElementById(id);
+    if (card) card.classList.toggle('active');
+  }
 
   function selectAnswer(q, opt) {
     if (checkedQuestions[q]) return;
