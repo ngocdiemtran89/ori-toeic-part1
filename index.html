@@ -696,9 +696,68 @@
     margin-bottom: 20px;
   }
 
+  /* TEST PLAYER (BỘ ĐỀ) */
+  .test-player {
+    background: white;
+    border: 1px solid rgba(0,87,184,0.1);
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: var(--shadow-md);
+  }
+  .test-top { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+  .test-counter {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--ori-blue-dark);
+    background: var(--ori-blue-pale);
+    padding: 6px 16px;
+    border-radius: 50px;
+  }
+  .test-score {
+    font-weight: 700; font-size: 14px; color: var(--ori-success);
+    background: #D1FAE5; padding: 6px 16px; border-radius: 50px;
+  }
+  .test-type { margin-left: auto; font-size: 13px; font-weight: 600; color: var(--ori-text-light); }
+  .test-imgwrap {
+    width: 100%;
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 18px;
+    background: var(--ori-blue-ghost);
+    box-shadow: var(--shadow-sm);
+  }
+  .test-imgwrap img {
+    width: 100%;
+    max-height: 380px;
+    object-fit: cover;
+    display: block;
+  }
+  .test-result {
+    background: linear-gradient(135deg, var(--ori-blue-dark), var(--ori-blue));
+    color: white;
+    border-radius: 20px;
+    padding: 40px 24px;
+    text-align: center;
+    box-shadow: var(--shadow-lg);
+  }
+  .tr-emoji { font-size: 56px; margin-bottom: 8px; }
+  .tr-score { font-family: 'Space Grotesk', sans-serif; font-size: 44px; font-weight: 800; }
+  .tr-label { font-size: 14px; opacity: 0.85; margin-bottom: 6px; }
+  .tr-msg { font-size: 15px; opacity: 0.9; margin: 10px 0 22px; }
+  .tr-retry {
+    background: white; color: var(--ori-blue-dark);
+    border: none; border-radius: 12px;
+    padding: 13px 30px;
+    font-family: 'Be Vietnam Pro', sans-serif; font-size: 15px; font-weight: 700;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .tr-retry:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+
   @media (max-width: 600px) {
     .progress-dashboard { grid-template-columns: repeat(2, 1fr); }
     .pg-val { font-size: 26px; }
+    .test-imgwrap img { max-height: 260px; }
   }
 
   /* CHECK BUTTON */
@@ -1392,7 +1451,7 @@
       <div class="pg-card"><div class="pg-icon">🔥</div><div class="pg-val" id="pgStreak">0</div><div class="pg-label">Ngày liên tiếp</div></div>
       <div class="pg-card"><div class="pg-icon">📅</div><div class="pg-val" id="pgDays">0</div><div class="pg-label">Tổng ngày học</div></div>
       <div class="pg-card"><div class="pg-icon">📖</div><div class="pg-val" id="pgWords">0</div><div class="pg-label">Từ đã thuộc</div></div>
-      <div class="pg-card"><div class="pg-icon">🎯</div><div class="pg-val" id="pgQuiz">0/3</div><div class="pg-label">Quiz tốt nhất</div></div>
+      <div class="pg-card"><div class="pg-icon">🎯</div><div class="pg-val" id="pgQuiz">0/6</div><div class="pg-label">Đề tốt nhất</div></div>
     </div>
 
     <div style="background:white;border:1px solid rgba(0,87,184,0.1);border-radius:14px;padding:16px 20px;box-shadow:var(--shadow-sm);">
@@ -1760,6 +1819,47 @@
           <p></p>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- BỘ ĐỀ LUYỆN TẬP -->
+  <div class="section">
+    <div class="section-label">📝 Bộ đề</div>
+    <div class="section-title">Luyện Đề Part 1 — Có Chấm Điểm</div>
+    <div class="section-desc">6 câu mô phỏng định dạng thi thật: nhìn ảnh → nghe 4 câu (A/B/C/D) → chọn đáp án. Làm xong có điểm + giải thích từng đáp án. Điểm tốt nhất được lưu vào tiến độ.</div>
+
+    <div style="margin-bottom:18px;">
+      <div class="rate-control">
+        <span class="rate-label">🔊 Tốc độ:</span>
+        <button class="rate-btn" onclick="setSpeechRate(0.7, this)">🐢 Chậm</button>
+        <button class="rate-btn active" onclick="setSpeechRate(0.85, this)">🚶 Bình thường</button>
+        <button class="rate-btn" onclick="setSpeechRate(1, this)">🏃 Nhanh</button>
+      </div>
+    </div>
+
+    <div class="test-player" id="testPlayer">
+      <div class="test-top">
+        <div class="test-counter">Câu <span id="tpNum">1</span>/<span id="tpTotal">6</span></div>
+        <div class="test-score">Điểm: <span id="tpScore">0</span></div>
+        <div class="test-type" id="tpType">🧑 Ảnh 1 người</div>
+      </div>
+      <div class="test-imgwrap"><img id="tpImg" src="" alt="Ảnh đề Part 1" loading="lazy"></div>
+      <div class="listen-bar">
+        <button class="listen-play-btn" onclick="tpPlay(this)">🔊 Nghe 4 câu (A → B → C → D)</button>
+        <button class="listen-hide-btn" id="tpHideBtn" onclick="tpToggleText()">🙈 Ẩn lời thoại (như thi thật)</button>
+      </div>
+      <div class="answer-options" id="tpOptions"></div>
+      <button class="check-btn" id="tpCheck" onclick="tpCheck()" disabled>✨ Kiểm tra</button>
+      <div class="explanation" id="tpExp"><h4></h4><p></p></div>
+      <button class="check-btn" id="tpNext" onclick="tpNext()" style="display:none;">Câu tiếp theo →</button>
+    </div>
+
+    <div class="test-result" id="tpResult" style="display:none;">
+      <div class="tr-emoji">🏆</div>
+      <div class="tr-label">Kết quả bộ đề</div>
+      <div class="tr-score">0/6</div>
+      <div class="tr-msg">Làm tốt lắm!</div>
+      <button class="tr-retry" onclick="tpStart()">🔄 Làm lại bộ đề</button>
     </div>
   </div>
 
@@ -2206,10 +2306,9 @@
 
   // ===== PART 1 LISTENING SIMULATOR =====
   // Đọc lần lượt 4 đáp án A → B → C → D giống đề thi thật (mỗi câu nghe 1 lần)
-  function playOptions(q, btn) {
+  function speakOptionsSeq(opts, btn) {
     if (!window.speechSynthesis) { alert('Trình duyệt không hỗ trợ phát âm. Hãy thử Chrome hoặc Safari nhé!'); return; }
     window.speechSynthesis.cancel();
-    const opts = [...document.querySelectorAll(`#q${q}-options .answer-opt`)];
     if (!opts.length) return;
     let i = 0;
     if (btn) { btn.disabled = true; btn.dataset.orig = btn.innerHTML; btn.innerHTML = '🔊 Đang phát...'; }
@@ -2236,6 +2335,9 @@
       window.speechSynthesis.speak(u);
     };
     next();
+  }
+  function playOptions(q, btn) {
+    speakOptionsSeq([...document.querySelectorAll(`#q${q}-options .answer-opt`)], btn);
   }
 
   // Bật/tắt "chế độ thi thật": làm mờ lời thoại để buộc luyện NGHE thay vì ĐỌC
@@ -2293,7 +2395,7 @@
     set('pgStreak', s);
     set('pgDays', progress.totalDays || 0);
     set('pgWords', knownCount());
-    set('pgQuiz', (progress.quizBest || 0) + '/3');
+    set('pgQuiz', (progress.testBest || 0) + '/6');
     const total = vocabData.length;
     const pct = Math.round((knownCount() / total) * 100);
     const bar = document.getElementById('pgWordBar');
@@ -3202,10 +3304,142 @@
     fb.innerHTML = `👁️ Đáp án: <strong>${dictPool[dictIdx].en}</strong> — nghe lại rồi gõ để kiểm tra nhé!`;
   }
 
+  // ===== BỘ ĐỀ LUYỆN TẬP (TEST PLAYER) =====
+  // Ảnh: Pexels (miễn phí, không cần ghi nguồn). Đáp án viết theo mô tả ảnh — thầy/cô nên xem lại ảnh để xác nhận.
+  const PX = id => `https://images.pexels.com/photos/${id}/pexels-photo-${id}.jpeg?auto=compress&cs=tinysrgb&w=900`;
+  const testBank = [
+    {
+      img: PX(8554304), typeLabel: '🧑 Ảnh 1 người',
+      options: { A: 'The woman is standing near a window.', B: 'The woman is sitting in front of a laptop.', C: 'The woman is turning off the computer.', D: 'The woman is writing in a notebook.' },
+      correct: 'B',
+      exp: { A: 'Sai! Cô ấy đang ngồi, không đứng.', B: 'Đúng! Người phụ nữ ngồi trước máy tính xách tay trong văn phòng.', C: 'Sai hành động! Không có dấu hiệu tắt máy.', D: 'Sai! Cô ấy ngồi bên laptop, không viết vào sổ.' }
+    },
+    {
+      img: PX(7964509), typeLabel: '🧑 Ảnh 1 người',
+      options: { A: 'The man is typing on a keyboard.', B: 'The man is leaving the building.', C: 'The man is talking on the phone.', D: 'The man is shaking hands with someone.' },
+      correct: 'C',
+      exp: { A: 'Sai hành động! Anh ấy đang nghe điện thoại, không gõ phím.', B: 'Bẫy suy diễn! Anh ấy đang ở trong văn phòng.', C: 'Đúng! Người đàn ông mặc vest đang nói chuyện điện thoại.', D: 'Sai! Chỉ có một người, không có ai để bắt tay.' }
+    },
+    {
+      img: PX(4344617), typeLabel: '👥 Ảnh nhiều người',
+      options: { A: 'Some people are seated around a table.', B: 'They are standing in a line.', C: 'They are boarding a bus.', D: 'The room is empty.' },
+      correct: 'A',
+      exp: { A: 'Đúng! Một nhóm người đang ngồi quanh bàn họp.', B: 'Sai! Họ đang ngồi, không xếp hàng đứng.', C: 'Sai! Không có xe buýt trong ảnh.', D: 'Sai! Phòng có nhiều người, không trống.' }
+    },
+    {
+      img: PX(8297616), typeLabel: '👥 Ảnh nhiều người',
+      options: { A: 'They are waving at each other.', B: 'They are carrying boxes.', C: 'They are sitting on a bench.', D: 'Two people are shaking hands.' },
+      correct: 'D',
+      exp: { A: 'Bẫy hành động giống! Bắt tay ≠ vẫy tay.', B: 'Sai! Không thấy thùng/hộp nào.', C: 'Sai! Họ đang đứng bắt tay, không ngồi ghế.', D: 'Đúng! Hai người đang bắt tay nhau.' }
+    },
+    {
+      img: PX(8292102), typeLabel: '🏞️ Ảnh tả vật / cảnh',
+      options: { A: 'People are boarding the boats.', B: 'Several boats are docked at the harbor.', C: 'The boats are sailing across the ocean.', D: 'A man is rowing a boat.' },
+      correct: 'B',
+      exp: { A: 'Sai! Ảnh không có người.', B: 'Đúng! Nhiều thuyền đang neo đậu tại bến cảng.', C: 'Bẫy State vs Action! Thuyền đang đậu, không di chuyển.', D: 'Sai! Không có người nào chèo thuyền.' }
+    },
+    {
+      img: PX(16859956), typeLabel: '🏞️ Ảnh tả vật / cảnh',
+      options: { A: 'People are having a meeting.', B: 'A man is arranging the chairs.', C: 'The chairs are arranged around a table.', D: 'The chairs are stacked in a corner.' },
+      correct: 'C',
+      exp: { A: 'Sai! Phòng họp trống, không có người.', B: 'Sai! Không có người đang sắp ghế.', C: 'Đúng! Những chiếc ghế được sắp quanh bàn họp.', D: 'Sai! Ghế được kê ngay ngắn quanh bàn, không chất đống ở góc.' }
+    }
+  ];
+
+  let tpIdx = 0, tpScore = 0, tpSelected = null, tpChecked = false;
+
+  function tpStart() {
+    tpIdx = 0; tpScore = 0;
+    document.getElementById('tpResult').style.display = 'none';
+    document.getElementById('testPlayer').style.display = 'block';
+    tpRender();
+  }
+  function tpRender() {
+    tpSelected = null; tpChecked = false;
+    if (window.speechSynthesis) window.speechSynthesis.cancel();
+    const q = testBank[tpIdx];
+    document.getElementById('tpNum').textContent = tpIdx + 1;
+    document.getElementById('tpTotal').textContent = testBank.length;
+    document.getElementById('tpScore').textContent = tpScore;
+    document.getElementById('tpType').textContent = q.typeLabel;
+    document.getElementById('tpImg').src = q.img;
+    const opts = document.getElementById('tpOptions');
+    opts.className = 'answer-options';
+    opts.innerHTML = ['A', 'B', 'C', 'D'].map(L =>
+      `<div class="answer-opt" data-opt="${L}" onclick="tpSelect('${L}')"><div class="opt-letter">${L}</div><div class="opt-text">${q.options[L]}</div></div>`
+    ).join('');
+    document.getElementById('tpHideBtn').innerHTML = '🙈 Ẩn lời thoại (như thi thật)';
+    const chk = document.getElementById('tpCheck');
+    chk.style.display = 'inline-flex'; chk.disabled = true; chk.innerHTML = '✨ Kiểm tra';
+    document.getElementById('tpNext').style.display = 'none';
+    document.getElementById('tpExp').className = 'explanation';
+  }
+  function tpSelect(L) {
+    if (tpChecked) return;
+    tpSelected = L;
+    document.querySelectorAll('#tpOptions .answer-opt').forEach(o => o.classList.remove('selected'));
+    document.querySelector(`#tpOptions .answer-opt[data-opt="${L}"]`).classList.add('selected');
+    document.getElementById('tpCheck').disabled = false;
+  }
+  function tpToggleText() {
+    const on = document.getElementById('tpOptions').classList.toggle('exam-mode');
+    document.getElementById('tpHideBtn').innerHTML = on ? '👁️ Hiện lời thoại' : '🙈 Ẩn lời thoại (như thi thật)';
+  }
+  function tpPlay(btn) {
+    speakOptionsSeq([...document.querySelectorAll('#tpOptions .answer-opt')], btn);
+  }
+  function tpCheck() {
+    if (tpChecked || !tpSelected) return;
+    tpChecked = true;
+    const q = testBank[tpIdx];
+    const ok = tpSelected === q.correct;
+    document.querySelectorAll('#tpOptions .answer-opt').forEach(o => {
+      o.style.cursor = 'default';
+      if (o.dataset.opt === q.correct) o.classList.add('correct');
+      if (o.dataset.opt === tpSelected && !ok) o.classList.add('incorrect');
+      o.classList.remove('selected');
+    });
+    if (ok) tpScore++;
+    document.getElementById('tpScore').textContent = tpScore;
+    const exp = document.getElementById('tpExp');
+    let html = ok
+      ? `🎉 Chính xác! Đáp án (${q.correct}): "<strong>${q.options[q.correct]}</strong>".<br><br>`
+      : `Đáp án đúng là (${q.correct}): "<strong>${q.options[q.correct]}</strong>".<br><br>
+         <div style="background:#FEE2E2;border-left:4px solid var(--ori-error);border-radius:8px;padding:10px 14px;margin-bottom:12px;"><strong style="color:var(--ori-error);">Vì sao bạn chọn (${tpSelected}) sai?</strong><br>${q.exp[tpSelected]}</div>`;
+    html += '<strong>Phân tích cả 4 đáp án:</strong><br>' +
+      ['A', 'B', 'C', 'D'].map(L => `• (${L}) ${L === q.correct ? '✅' : '✗'} ${q.exp[L]}`).join('<br>');
+    exp.querySelector('h4').innerHTML = ok ? '🎉 Tuyệt vời!' : '📖 Cùng xem lại nào';
+    exp.querySelector('p').innerHTML = html;
+    exp.className = `explanation show ${ok ? 'correct-exp' : 'incorrect-exp'}`;
+    document.getElementById('tpCheck').style.display = 'none';
+    const nxt = document.getElementById('tpNext');
+    nxt.style.display = 'inline-flex';
+    nxt.innerHTML = tpIdx < testBank.length - 1 ? 'Câu tiếp theo →' : 'Xem kết quả 🏁';
+    markStudiedToday(); saveProgress();
+  }
+  function tpNext() {
+    if (tpIdx < testBank.length - 1) { tpIdx++; tpRender(); }
+    else tpFinish();
+  }
+  function tpFinish() {
+    if (window.speechSynthesis) window.speechSynthesis.cancel();
+    document.getElementById('testPlayer').style.display = 'none';
+    const pct = Math.round(tpScore / testBank.length * 100);
+    const emoji = pct >= 90 ? '🏆' : pct >= 70 ? '🎉' : pct >= 50 ? '👍' : '💪';
+    const res = document.getElementById('tpResult');
+    res.style.display = 'block';
+    res.querySelector('.tr-emoji').textContent = emoji;
+    res.querySelector('.tr-score').textContent = `${tpScore}/${testBank.length}`;
+    res.querySelector('.tr-msg').textContent = pct >= 70 ? 'Làm tốt lắm! Bạn đã chắc tay với Part 1.' : 'Luyện thêm vài lần nữa là 6/6 ngay!';
+    progress.testBest = Math.max(progress.testBest || 0, tpScore);
+    markStudiedToday(); saveProgress();
+  }
+
   // Initial game setup
   resetFlashcard();
   renderProgress();
   startDictation();
+  tpStart();
 </script>
 </body>
 </html>
