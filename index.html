@@ -432,6 +432,79 @@
     font-size: 14.5px;
     color: var(--ori-text);
     padding-top: 4px;
+    transition: filter 0.25s;
+  }
+
+  /* LISTENING CONTROLS */
+  .listen-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .listen-play-btn, .listen-hide-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 16px;
+    font-family: 'Be Vietnam Pro', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .listen-play-btn {
+    background: linear-gradient(135deg, var(--ori-blue), var(--ori-blue-light));
+    color: white;
+    box-shadow: var(--shadow-sm);
+  }
+  .listen-play-btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
+  .listen-play-btn:disabled { opacity: 0.7; cursor: progress; transform: none; }
+  .listen-hide-btn {
+    background: var(--ori-blue-pale);
+    color: var(--ori-blue-dark);
+    border: 1px solid rgba(0,87,184,0.15);
+  }
+  .listen-hide-btn:hover { background: #DCEBFF; }
+  .answer-options.exam-mode .opt-text {
+    filter: blur(6px);
+    user-select: none;
+  }
+  .answer-opt.playing {
+    border-color: var(--ori-blue) !important;
+    background: var(--ori-blue-pale) !important;
+    box-shadow: 0 0 0 3px var(--ori-accent-glow);
+  }
+
+  /* SIMILAR-SOUND TRAPS */
+  .soundtrap-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 14px;
+  }
+  .soundtrap-card {
+    background: white;
+    border: 1px solid rgba(0,87,184,0.1);
+    border-radius: 14px;
+    padding: 16px 18px;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.2s;
+  }
+  .soundtrap-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+  .st-row { display: flex; align-items: center; gap: 8px; padding: 5px 0; }
+  .st-row .speak-btn { flex-shrink: 0; }
+  .st-word { font-family: 'Space Grotesk', sans-serif; font-weight: 700; color: var(--ori-blue-dark); font-size: 15px; }
+  .st-ipa { color: var(--ori-text-light); font-size: 12.5px; font-style: italic; }
+  .st-mean { color: var(--ori-text); font-size: 13px; margin-left: auto; }
+  .st-divider {
+    text-align: center;
+    color: var(--ori-error);
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 1px;
+    margin: 2px 0;
   }
 
   /* CHECK BUTTON */
@@ -1224,6 +1297,76 @@
     </div>
   </div>
 
+  <!-- BẪY ÂM GIỐNG -->
+  <div class="section">
+    <div class="section-label">🔊 Phát âm</div>
+    <div class="section-title">12 Cặp Từ "Bẫy Âm Giống" Kinh Điển</div>
+    <div class="section-desc">ETS rất hay dùng từ phát âm gần giống từ trong ảnh để gài bẫy. Bấm 🔊 nghe và so sánh từng cặp — nghe quen sẽ không còn bị lừa!</div>
+
+    <div class="soundtrap-grid">
+      <div class="soundtrap-card">
+        <div class="st-row"><button class="speak-btn" onclick="speakEN('coffee', event)" title="Nghe">🔊</button><span class="st-word">coffee</span><span class="st-ipa">/ˈkɔːfi/</span><span class="st-mean">cà phê</span></div>
+        <div class="st-divider">≠</div>
+        <div class="st-row"><button class="speak-btn" onclick="speakEN('copy', event)" title="Nghe">🔊</button><span class="st-word">copy</span><span class="st-ipa">/ˈkɑːpi/</span><span class="st-mean">sao chép</span></div>
+      </div>
+      <div class="soundtrap-card">
+        <div class="st-row"><button class="speak-btn" onclick="speakEN('walk', event)" title="Nghe">🔊</button><span class="st-word">walk</span><span class="st-ipa">/wɔːk/</span><span class="st-mean">đi bộ</span></div>
+        <div class="st-divider">≠</div>
+        <div class="st-row"><button class="speak-btn" onclick="speakEN('work', event)" title="Nghe">🔊</button><span class="st-word">work</span><span class="st-ipa">/wɜːrk/</span><span class="st-mean">làm việc</span></div>
+      </div>
+      <div class="soundtrap-card">
+        <div class="st-row"><button class="speak-btn" onclick="speakEN('glasses', event)" title="Nghe">🔊</button><span class="st-word">glasses</span><span class="st-ipa">/ˈɡlæsɪz/</span><span class="st-mean">kính / ly</span></div>
+        <div class="st-divider">≠</div>
+        <div class="st-row"><button class="speak-btn" onclick="speakEN('grass', event)" title="Nghe">🔊</button><span class="st-word">grass</span><span class="st-ipa">/ɡræs/</span><span class="st-mean">cỏ</span></div>
+      </div>
+      <div class="soundtrap-card">
+        <div class="st-row"><button class="speak-btn" onclick="speakEN('chair', event)" title="Nghe">🔊</button><span class="st-word">chair</span><span class="st-ipa">/tʃer/</span><span class="st-mean">ghế</span></div>
+        <div class="st-divider">≠</div>
+        <div class="st-row"><button class="speak-btn" onclick="speakEN('share', event)" title="Nghe">🔊</button><span class="st-word">share</span><span class="st-ipa">/ʃer/</span><span class="st-mean">chia sẻ</span></div>
+      </div>
+      <div class="soundtrap-card">
+        <div class="st-row"><button class="speak-btn" onclick="speakEN('light', event)" title="Nghe">🔊</button><span class="st-word">light</span><span class="st-ipa">/laɪt/</span><span class="st-mean">đèn / ánh sáng</span></div>
+        <div class="st-divider">≠</div>
+        <div class="st-row"><button class="speak-btn" onclick="speakEN('right', event)" title="Nghe">🔊</button><span class="st-word">right</span><span class="st-ipa">/raɪt/</span><span class="st-mean">bên phải</span></div>
+      </div>
+      <div class="soundtrap-card">
+        <div class="st-row"><button class="speak-btn" onclick="speakEN('close', event)" title="Nghe">🔊</button><span class="st-word">close</span><span class="st-ipa">/kloʊz/</span><span class="st-mean">đóng</span></div>
+        <div class="st-divider">≠</div>
+        <div class="st-row"><button class="speak-btn" onclick="speakEN('clothes', event)" title="Nghe">🔊</button><span class="st-word">clothes</span><span class="st-ipa">/kloʊðz/</span><span class="st-mean">quần áo</span></div>
+      </div>
+      <div class="soundtrap-card">
+        <div class="st-row"><button class="speak-btn" onclick="speakEN('door', event)" title="Nghe">🔊</button><span class="st-word">door</span><span class="st-ipa">/dɔːr/</span><span class="st-mean">cửa</span></div>
+        <div class="st-divider">≠</div>
+        <div class="st-row"><button class="speak-btn" onclick="speakEN('floor', event)" title="Nghe">🔊</button><span class="st-word">floor</span><span class="st-ipa">/flɔːr/</span><span class="st-mean">sàn nhà</span></div>
+      </div>
+      <div class="soundtrap-card">
+        <div class="st-row"><button class="speak-btn" onclick="speakEN('read', event)" title="Nghe">🔊</button><span class="st-word">read</span><span class="st-ipa">/riːd/</span><span class="st-mean">đọc</span></div>
+        <div class="st-divider">≠</div>
+        <div class="st-row"><button class="speak-btn" onclick="speakEN('lead', event)" title="Nghe">🔊</button><span class="st-word">lead</span><span class="st-ipa">/liːd/</span><span class="st-mean">dẫn dắt</span></div>
+      </div>
+      <div class="soundtrap-card">
+        <div class="st-row"><button class="speak-btn" onclick="speakEN('pour', event)" title="Nghe">🔊</button><span class="st-word">pour</span><span class="st-ipa">/pɔːr/</span><span class="st-mean">rót</span></div>
+        <div class="st-divider">≠</div>
+        <div class="st-row"><button class="speak-btn" onclick="speakEN('poor', event)" title="Nghe">🔊</button><span class="st-word">poor</span><span class="st-ipa">/pʊr/</span><span class="st-mean">nghèo</span></div>
+      </div>
+      <div class="soundtrap-card">
+        <div class="st-row"><button class="speak-btn" onclick="speakEN('ship', event)" title="Nghe">🔊</button><span class="st-word">ship</span><span class="st-ipa">/ʃɪp/</span><span class="st-mean">tàu thủy</span></div>
+        <div class="st-divider">≠</div>
+        <div class="st-row"><button class="speak-btn" onclick="speakEN('sheep', event)" title="Nghe">🔊</button><span class="st-word">sheep</span><span class="st-ipa">/ʃiːp/</span><span class="st-mean">con cừu</span></div>
+      </div>
+      <div class="soundtrap-card">
+        <div class="st-row"><button class="speak-btn" onclick="speakEN('sit', event)" title="Nghe">🔊</button><span class="st-word">sit</span><span class="st-ipa">/sɪt/</span><span class="st-mean">ngồi</span></div>
+        <div class="st-divider">≠</div>
+        <div class="st-row"><button class="speak-btn" onclick="speakEN('seat', event)" title="Nghe">🔊</button><span class="st-word">seat</span><span class="st-ipa">/siːt/</span><span class="st-mean">chỗ ngồi</span></div>
+      </div>
+      <div class="soundtrap-card">
+        <div class="st-row"><button class="speak-btn" onclick="speakEN('cart', event)" title="Nghe">🔊</button><span class="st-word">cart</span><span class="st-ipa">/kɑːrt/</span><span class="st-mean">xe đẩy</span></div>
+        <div class="st-divider">≠</div>
+        <div class="st-row"><button class="speak-btn" onclick="speakEN('card', event)" title="Nghe">🔊</button><span class="st-word">card</span><span class="st-ipa">/kɑːrd/</span><span class="st-mean">thẻ</span></div>
+      </div>
+    </div>
+  </div>
+
   <!-- INTERACTIVE EXAMPLES -->
   <div class="section">
     <div class="section-label">🎮 Luyện tập</div>
@@ -1254,6 +1397,11 @@
           <div style="padding:14px 20px;background:var(--ori-blue-ghost);">
             <div class="img-hint" style="margin:0;font-style:normal;font-weight:600;color:var(--ori-text);">🔍 Phân tích: Ai? Làm gì? Ở đâu?</div>
           </div>
+        </div>
+
+        <div class="listen-bar">
+          <button class="listen-play-btn" onclick="playOptions(1, this)">🔊 Nghe 4 câu (A → B → C → D)</button>
+          <button class="listen-hide-btn" onclick="toggleExamMode(1, this)">🙈 Ẩn lời thoại (như thi thật)</button>
         </div>
 
         <div class="answer-options" id="q1-options">
@@ -1300,6 +1448,11 @@
           </div>
         </div>
 
+        <div class="listen-bar">
+          <button class="listen-play-btn" onclick="playOptions(2, this)">🔊 Nghe 4 câu (A → B → C → D)</button>
+          <button class="listen-hide-btn" onclick="toggleExamMode(2, this)">🙈 Ẩn lời thoại (như thi thật)</button>
+        </div>
+
         <div class="answer-options" id="q2-options">
           <div class="answer-opt" data-q="2" data-opt="A" onclick="selectAnswer(2, 'A')">
             <div class="opt-letter">A</div>
@@ -1342,6 +1495,11 @@
           <div style="padding:14px 20px;background:var(--ori-blue-ghost);">
             <div class="img-hint" style="margin:0;font-style:normal;font-weight:600;color:var(--ori-text);">🔍 Lưu ý: Không có người → tập trung vào sự vật/cảnh vật</div>
           </div>
+        </div>
+
+        <div class="listen-bar">
+          <button class="listen-play-btn" onclick="playOptions(3, this)">🔊 Nghe 4 câu (A → B → C → D)</button>
+          <button class="listen-hide-btn" onclick="toggleExamMode(3, this)">🙈 Ẩn lời thoại (như thi thật)</button>
         </div>
 
         <div class="answer-options" id="q3-options">
@@ -1719,6 +1877,47 @@
   if (window.speechSynthesis) {
     window.speechSynthesis.getVoices();
     window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+  }
+
+  // ===== PART 1 LISTENING SIMULATOR =====
+  // Đọc lần lượt 4 đáp án A → B → C → D giống đề thi thật (mỗi câu nghe 1 lần)
+  function playOptions(q, btn) {
+    if (!window.speechSynthesis) { alert('Trình duyệt không hỗ trợ phát âm. Hãy thử Chrome hoặc Safari nhé!'); return; }
+    window.speechSynthesis.cancel();
+    const opts = [...document.querySelectorAll(`#q${q}-options .answer-opt`)];
+    if (!opts.length) return;
+    let i = 0;
+    if (btn) { btn.disabled = true; btn.dataset.orig = btn.innerHTML; btn.innerHTML = '🔊 Đang phát...'; }
+    const voices = window.speechSynthesis.getVoices();
+    const enVoice = voices.find(v => v.lang === 'en-US' && v.name.includes('Female'))
+      || voices.find(v => v.lang === 'en-US')
+      || voices.find(v => v.lang.startsWith('en'));
+    const finish = () => {
+      opts.forEach(o => o.classList.remove('playing'));
+      if (btn) { btn.disabled = false; btn.innerHTML = btn.dataset.orig; }
+    };
+    const next = () => {
+      opts.forEach(o => o.classList.remove('playing'));
+      if (i >= opts.length) { finish(); return; }
+      const opt = opts[i];
+      opt.classList.add('playing');
+      const letter = opt.querySelector('.opt-letter').textContent.trim();
+      const text = opt.querySelector('.opt-text').textContent.trim();
+      const u = new SpeechSynthesisUtterance(`${letter}. ${text}`);
+      u.lang = 'en-US'; u.rate = 0.9; u.pitch = 1;
+      if (enVoice) u.voice = enVoice;
+      u.onend = () => { i++; setTimeout(next, 650); };
+      u.onerror = () => { i++; setTimeout(next, 300); };
+      window.speechSynthesis.speak(u);
+    };
+    next();
+  }
+
+  // Bật/tắt "chế độ thi thật": làm mờ lời thoại để buộc luyện NGHE thay vì ĐỌC
+  function toggleExamMode(q, btn) {
+    const wrap = document.getElementById(`q${q}-options`);
+    const on = wrap.classList.toggle('exam-mode');
+    btn.innerHTML = on ? '👁️ Hiện lời thoại' : '🙈 Ẩn lời thoại (như thi thật)';
   }
 
   // Quiz Data
