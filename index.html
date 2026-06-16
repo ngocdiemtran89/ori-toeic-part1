@@ -697,6 +697,21 @@
   }
 
   /* TEST PLAYER (BỘ ĐỀ) */
+  .testset-bar { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
+  .testset-btn {
+    border: 1px solid rgba(0,87,184,0.18);
+    background: white;
+    color: var(--ori-blue-dark);
+    border-radius: 50px;
+    padding: 9px 20px;
+    font-family: 'Be Vietnam Pro', sans-serif;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .testset-btn:hover { border-color: var(--ori-blue-light); background: var(--ori-blue-ghost); }
+  .testset-btn.active { background: var(--ori-blue); color: white; border-color: var(--ori-blue); box-shadow: var(--shadow-sm); }
   .test-player {
     background: white;
     border: 1px solid rgba(0,87,184,0.1);
@@ -1826,7 +1841,13 @@
   <div class="section">
     <div class="section-label">📝 Bộ đề</div>
     <div class="section-title">Luyện Đề Part 1 — Có Chấm Điểm</div>
-    <div class="section-desc">6 câu mô phỏng định dạng thi thật: nhìn ảnh → nghe 4 câu (A/B/C/D) → chọn đáp án. Làm xong có điểm + giải thích từng đáp án. Điểm tốt nhất được lưu vào tiến độ.</div>
+    <div class="section-desc">3 bộ đề × 6 câu = 18 câu mô phỏng định dạng thi thật: nhìn ảnh → nghe 4 câu (A/B/C/D) → chọn đáp án. Làm xong có điểm + giải thích từng đáp án. Điểm tốt nhất được lưu vào tiến độ.</div>
+
+    <div class="testset-bar">
+      <button class="testset-btn active" onclick="tpSelectTest(0, this)">📘 Test 1 — Cơ bản</button>
+      <button class="testset-btn" onclick="tpSelectTest(1, this)">📗 Test 2 — Đời sống</button>
+      <button class="testset-btn" onclick="tpSelectTest(2, this)">📕 Test 3 — Nâng cao</button>
+    </div>
 
     <div style="margin-bottom:18px;">
       <div class="rate-control">
@@ -3307,7 +3328,8 @@
   // ===== BỘ ĐỀ LUYỆN TẬP (TEST PLAYER) =====
   // Ảnh: Pexels (miễn phí, không cần ghi nguồn). Đáp án viết theo mô tả ảnh — thầy/cô nên xem lại ảnh để xác nhận.
   const PX = id => `https://images.pexels.com/photos/${id}/pexels-photo-${id}.jpeg?auto=compress&cs=tinysrgb&w=900`;
-  const testBank = [
+  const tests = [
+   { name: 'Test 1 — Cơ bản', qs: [
     {
       img: PX(8554304), typeLabel: '🧑 Ảnh 1 người',
       options: { A: 'The woman is standing near a window.', B: 'The woman is sitting in front of a laptop.', C: 'The woman is turning off the computer.', D: 'The woman is writing in a notebook.' },
@@ -3344,8 +3366,93 @@
       correct: 'C',
       exp: { A: 'Sai! Phòng họp trống, không có người.', B: 'Sai! Không có người đang sắp ghế.', C: 'Đúng! Những chiếc ghế được sắp quanh bàn họp.', D: 'Sai! Ghế được kê ngay ngắn quanh bàn, không chất đống ở góc.' }
     }
+   ]},
+   { name: 'Test 2 — Đời sống', qs: [
+    {
+      img: PX(4252142), typeLabel: '🧑 Ảnh 1 người',
+      options: { A: 'The cook is washing the dishes.', B: 'The cook is slicing some vegetables.', C: 'The cook is setting the table.', D: 'The cook is pouring water into a pot.' },
+      correct: 'B',
+      exp: { A: 'Sai! Không có cảnh rửa chén.', B: 'Đúng! Người đầu bếp đang thái rau củ trên thớt.', C: 'Sai! Không phải đang dọn bàn ăn.', D: 'Sai! Không thấy rót nước vào nồi.' }
+    },
+    {
+      img: PX(310983), typeLabel: '🧑 Ảnh 1 người',
+      options: { A: 'A man is repairing a bicycle.', B: 'A man is walking across the street.', C: 'A man is riding a bicycle on the street.', D: 'A man is parking his car.' },
+      correct: 'C',
+      exp: { A: 'Sai hành động! Anh ấy đang đạp xe, không sửa xe.', B: 'Sai! Anh ấy đang đạp xe, không đi bộ.', C: 'Đúng! Người đàn ông đang đạp xe trên đường phố.', D: 'Bẫy âm giống (park)! Không có ô tô nào được đỗ.' }
+    },
+    {
+      img: PX(13534778), typeLabel: '👥 Ảnh nhiều người',
+      options: { A: 'People are waiting for a bus.', B: 'People are riding bicycles.', C: 'The street is empty.', D: 'Some people are crossing the street.' },
+      correct: 'D',
+      exp: { A: 'Sai! Họ đang băng qua đường, không đợi xe buýt.', B: 'Sai! Không ai đạp xe.', C: 'Sai! Có người trên đường, không trống.', D: 'Đúng! Vài người đang băng qua vạch kẻ đường.' }
+    },
+    {
+      img: PX(9016541), typeLabel: '🛒 Ảnh 1 người',
+      options: { A: 'The woman is pushing a cart.', B: 'The woman is holding a shopping basket.', C: 'The woman is paying at the cashier.', D: 'The woman is trying on clothes.' },
+      correct: 'B',
+      exp: { A: 'Sai! Cô ấy cầm giỏ, không đẩy xe đẩy.', B: 'Đúng! Người phụ nữ đang cầm giỏ mua hàng trong siêu thị.', C: 'Sai! Không phải đang thanh toán ở quầy.', D: 'Sai! Không có cảnh thử quần áo.' }
+    },
+    {
+      img: PX(333304), typeLabel: '🏞️ Ảnh tả vật / cảnh',
+      options: { A: 'A woman is reading a book.', B: 'Books are scattered on the floor.', C: 'Books are arranged on the shelves.', D: 'Someone is putting books on a shelf.' },
+      correct: 'C',
+      exp: { A: 'Sai! Ảnh không có người.', B: 'Sai! Sách được xếp gọn, không rơi vãi.', C: 'Đúng! Sách được xếp ngay ngắn trên các kệ.', D: 'Sai! Không có người đang xếp sách.' }
+    },
+    {
+      img: PX(9799728), typeLabel: '🏞️ Ảnh tả vật / cảnh',
+      options: { A: 'Cars are parked in a parking lot.', B: 'Cars are driving on the highway.', C: 'People are washing the cars.', D: 'The parking lot is empty.' },
+      correct: 'A',
+      exp: { A: 'Đúng! Nhiều xe ô tô đang đỗ trong bãi đậu xe.', B: 'Bẫy State vs Action! Xe đang đỗ, không chạy.', C: 'Sai! Không có người rửa xe.', D: 'Sai! Bãi xe có nhiều xe, không trống.' }
+    }
+   ]},
+   { name: 'Test 3 — Nâng cao', qs: [
+    {
+      img: PX(1023423), typeLabel: '🌳 Ảnh 1 người',
+      options: { A: 'The woman is cutting the grass.', B: 'The woman is planting a tree.', C: 'The woman is watering the plants.', D: 'The woman is picking flowers.' },
+      correct: 'C',
+      exp: { A: 'Sai! Cô ấy đang tưới cây, không cắt cỏ.', B: 'Sai! Không phải đang trồng cây.', C: 'Đúng! Người phụ nữ đang tưới cây bằng bình tưới.', D: 'Sai! Không có cảnh hái hoa.' }
+    },
+    {
+      img: PX(3380826), typeLabel: '🏢 Ảnh 1 người',
+      options: { A: 'The man is erasing the whiteboard.', B: 'The man is writing on a whiteboard.', C: 'The man is hanging a picture on the wall.', D: 'The man is typing on a laptop.' },
+      correct: 'B',
+      exp: { A: 'Sai hành động! Anh ấy đang viết, không xóa bảng.', B: 'Đúng! Người đàn ông đang viết lên bảng trắng.', C: 'Sai! Không có cảnh treo tranh.', D: 'Sai! Không phải đang gõ laptop.' }
+    },
+    {
+      img: PX(11041517), typeLabel: '👥 Ảnh nhiều người',
+      options: { A: 'People are sitting on benches.', B: 'People are getting into a car.', C: 'People are climbing the stairs.', D: 'People are standing in line.' },
+      correct: 'D',
+      exp: { A: 'Sai! Họ đang đứng, không ngồi ghế.', B: 'Sai! Không ai bước vào ô tô.', C: 'Sai! Không có cảnh leo cầu thang.', D: 'Đúng! Mọi người đang đứng xếp hàng.' }
+    },
+    {
+      img: PX(10202865), typeLabel: '🏗️ Ảnh nhiều người',
+      options: { A: 'The workers are wearing safety gear.', B: 'The workers are eating lunch.', C: 'The workers are painting a wall.', D: 'The workers are resting on the ground.' },
+      correct: 'A',
+      exp: { A: 'Đúng! Các công nhân đang mặc đồ bảo hộ tại công trường.', B: 'Sai! Không có cảnh ăn trưa.', C: 'Sai! Không phải đang sơn tường.', D: 'Sai! Họ đang làm việc, không nghỉ ngơi.' }
+    },
+    {
+      img: PX(15375171), typeLabel: '🏞️ Ảnh tả vật / cảnh',
+      options: { A: 'Boats are sailing under the bridge.', B: 'A bridge spans the river.', C: 'People are fishing by the river.', D: 'The bridge is being repaired.' },
+      correct: 'B',
+      exp: { A: 'Sai! Không thấy thuyền nào đi qua.', B: 'Đúng! Một cây cầu bắc ngang qua dòng sông.', C: 'Sai! Không có người câu cá.', D: 'Bẫy "is being"! Không có ai đang sửa cầu.' }
+    },
+    {
+      img: PX(12688961), typeLabel: '🍽️ Ảnh tả vật / cảnh',
+      options: { A: 'Customers are eating at the tables.', B: 'A waiter is serving food.', C: 'The tables have been set for dining.', D: 'The chairs are stacked on the tables.' },
+      correct: 'C',
+      exp: { A: 'Sai! Nhà hàng trống, không có khách.', B: 'Sai! Không có nhân viên phục vụ.', C: 'Đúng! Các bàn đã được bày biện sẵn để dùng bữa.', D: 'Sai! Ghế được kê quanh bàn, không chất lên bàn.' }
+    }
+   ]}
   ];
 
+  let tpTest = 0;
+  function tpQs() { return tests[tpTest].qs; }
+  function tpSelectTest(idx, btn) {
+    tpTest = idx;
+    document.querySelectorAll('.testset-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    tpStart();
+  }
   let tpIdx = 0, tpScore = 0, tpSelected = null, tpChecked = false;
 
   function tpStart() {
@@ -3357,9 +3464,9 @@
   function tpRender() {
     tpSelected = null; tpChecked = false;
     if (window.speechSynthesis) window.speechSynthesis.cancel();
-    const q = testBank[tpIdx];
+    const q = tpQs()[tpIdx];
     document.getElementById('tpNum').textContent = tpIdx + 1;
-    document.getElementById('tpTotal').textContent = testBank.length;
+    document.getElementById('tpTotal').textContent = tpQs().length;
     document.getElementById('tpScore').textContent = tpScore;
     document.getElementById('tpType').textContent = q.typeLabel;
     document.getElementById('tpImg').src = q.img;
@@ -3391,7 +3498,7 @@
   function tpCheck() {
     if (tpChecked || !tpSelected) return;
     tpChecked = true;
-    const q = testBank[tpIdx];
+    const q = tpQs()[tpIdx];
     const ok = tpSelected === q.correct;
     document.querySelectorAll('#tpOptions .answer-opt').forEach(o => {
       o.style.cursor = 'default';
@@ -3414,22 +3521,22 @@
     document.getElementById('tpCheck').style.display = 'none';
     const nxt = document.getElementById('tpNext');
     nxt.style.display = 'inline-flex';
-    nxt.innerHTML = tpIdx < testBank.length - 1 ? 'Câu tiếp theo →' : 'Xem kết quả 🏁';
+    nxt.innerHTML = tpIdx < tpQs().length - 1 ? 'Câu tiếp theo →' : 'Xem kết quả 🏁';
     markStudiedToday(); saveProgress();
   }
   function tpNext() {
-    if (tpIdx < testBank.length - 1) { tpIdx++; tpRender(); }
+    if (tpIdx < tpQs().length - 1) { tpIdx++; tpRender(); }
     else tpFinish();
   }
   function tpFinish() {
     if (window.speechSynthesis) window.speechSynthesis.cancel();
     document.getElementById('testPlayer').style.display = 'none';
-    const pct = Math.round(tpScore / testBank.length * 100);
+    const pct = Math.round(tpScore / tpQs().length * 100);
     const emoji = pct >= 90 ? '🏆' : pct >= 70 ? '🎉' : pct >= 50 ? '👍' : '💪';
     const res = document.getElementById('tpResult');
     res.style.display = 'block';
     res.querySelector('.tr-emoji').textContent = emoji;
-    res.querySelector('.tr-score').textContent = `${tpScore}/${testBank.length}`;
+    res.querySelector('.tr-score').textContent = `${tpScore}/${tpQs().length}`;
     res.querySelector('.tr-msg').textContent = pct >= 70 ? 'Làm tốt lắm! Bạn đã chắc tay với Part 1.' : 'Luyện thêm vài lần nữa là 6/6 ngay!';
     progress.testBest = Math.max(progress.testBest || 0, tpScore);
     markStudiedToday(); saveProgress();
