@@ -643,6 +643,59 @@
   .dict-reveal:hover { background: #DCEBFF; }
   .dict-feedback { margin-top: 16px; font-size: 15px; font-weight: 600; min-height: 24px; }
 
+  /* ONLINE RESOURCES */
+  .resource-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+  }
+  .resource-card {
+    display: flex;
+    flex-direction: column;
+    background: white;
+    border: 1px solid rgba(0,87,184,0.1);
+    border-radius: 16px;
+    padding: 22px;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.25s;
+  }
+  .resource-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-3px); border-color: var(--ori-blue-light); }
+  .res-top { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+  .res-logo {
+    width: 46px; height: 46px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+    background: var(--ori-blue-pale);
+    flex-shrink: 0;
+  }
+  .res-name { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 16px; color: var(--ori-blue-dark); }
+  .res-tag { font-size: 11.5px; font-weight: 600; color: var(--ori-success); }
+  .res-tag.official { color: var(--ori-blue); }
+  .res-desc { font-size: 13.5px; color: var(--ori-text-light); line-height: 1.6; flex-grow: 1; margin-bottom: 16px; }
+  .res-link {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    background: linear-gradient(135deg, var(--ori-blue), var(--ori-blue-light));
+    color: white;
+    text-decoration: none;
+    border-radius: 10px;
+    padding: 11px 18px;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+  .res-link:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
+  .res-note {
+    background: #FEF3C7;
+    border: 1px solid #FDE68A;
+    border-radius: 12px;
+    padding: 14px 18px;
+    font-size: 13px;
+    color: var(--ori-text);
+    line-height: 1.6;
+    margin-bottom: 20px;
+  }
+
   @media (max-width: 600px) {
     .progress-dashboard { grid-template-columns: repeat(2, 1fr); }
     .pg-val { font-size: 26px; }
@@ -1706,6 +1759,71 @@
           <h4></h4>
           <p></p>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LUYỆN ĐỀ ONLINE -->
+  <div class="section">
+    <div class="section-label">🌐 Luyện đề Online</div>
+    <div class="section-title">Trang Luyện Đề Part 1 Miễn Phí, Uy Tín</div>
+    <div class="section-desc">Muốn luyện thêm nhiều ảnh đề thật? Đây là các trang luyện đề Part 1 miễn phí chất lượng — bấm để mở và làm bài trực tiếp.</div>
+
+    <div class="res-note">💡 <strong>Lưu ý:</strong> Đề thi TOEIC chính thức thuộc bản quyền của ETS, nên các đề luyện nằm ở trang gốc. Hãy bấm vào từng nguồn bên dưới để luyện trực tiếp nhé!</div>
+
+    <div class="resource-grid">
+      <div class="resource-card">
+        <div class="res-top">
+          <div class="res-logo">🏛️</div>
+          <div><div class="res-name">ETS Global</div><div class="res-tag official">★ Chính chủ ETS</div></div>
+        </div>
+        <div class="res-desc">Công cụ "Level Projector" chính thức từ ETS — 25 câu nghe thật trong 15 phút, chấm trình độ CEFR (A1–C1) của bạn.</div>
+        <a class="res-link" href="https://www.etsglobal.org/cm/en/practice-test/toeic-level-projector" target="_blank" rel="noopener noreferrer">Mở trang luyện →</a>
+      </div>
+
+      <div class="resource-card">
+        <div class="res-top">
+          <div class="res-logo">📝</div>
+          <div><div class="res-name">Exam English</div><div class="res-tag">Miễn phí • 17 câu</div></div>
+        </div>
+        <div class="res-desc">Bài luyện Part 1 (Photographs) có ảnh + audio, chọn câu mô tả đúng nhất. Giao diện gọn, đúng định dạng đề thi.</div>
+        <a class="res-link" href="https://www.examenglish.com/TOEIC/TOEIC_listening_part1.htm" target="_blank" rel="noopener noreferrer">Mở trang luyện →</a>
+      </div>
+
+      <div class="resource-card">
+        <div class="res-top">
+          <div class="res-logo">🎯</div>
+          <div><div class="res-name">BestMyTest</div><div class="res-tag">Miễn phí • 365 câu</div></div>
+        </div>
+        <div class="res-desc">Kho 365 câu Part 1 Photographs kèm giải thích chi tiết. Lượng đề lớn, lý tưởng để luyện phản xạ hằng ngày.</div>
+        <a class="res-link" href="https://www.bestmytest.com/toeic/listening" target="_blank" rel="noopener noreferrer">Mở trang luyện →</a>
+      </div>
+
+      <div class="resource-card">
+        <div class="res-top">
+          <div class="res-logo">📚</div>
+          <div><div class="res-name">eStudyMe</div><div class="res-tag">Miễn phí</div></div>
+        </div>
+        <div class="res-desc">Bài luyện "TOEIC Part 1 – Photos" có audio và đáp án ngay, kèm bộ đề full test để thi thử.</div>
+        <a class="res-link" href="https://estudyme.com/en/practice/toeic-practice-part-1-photos/" target="_blank" rel="noopener noreferrer">Mở trang luyện →</a>
+      </div>
+
+      <div class="resource-card">
+        <div class="res-top">
+          <div class="res-logo">🌍</div>
+          <div><div class="res-name">EnglishClub</div><div class="res-tag">Miễn phí</div></div>
+        </div>
+        <div class="res-desc">Bài luyện TOEIC kèm ví dụ minh họa và giải thích từng dạng câu hỏi Listening — phù hợp người mới bắt đầu.</div>
+        <a class="res-link" href="https://www.englishclub.com/esl-exams/ets-toeic-practice.php" target="_blank" rel="noopener noreferrer">Mở trang luyện →</a>
+      </div>
+
+      <div class="resource-card">
+        <div class="res-top">
+          <div class="res-logo">💡</div>
+          <div><div class="res-name">LUME Test</div><div class="res-tag">Miễn phí</div></div>
+        </div>
+        <div class="res-desc">Bộ đề Listening & Reading online miễn phí, có chấm điểm tự động và phân tích kết quả theo từng Part.</div>
+        <a class="res-link" href="https://lumetest.com/our-tests/toeic" target="_blank" rel="noopener noreferrer">Mở trang luyện →</a>
       </div>
     </div>
   </div>
