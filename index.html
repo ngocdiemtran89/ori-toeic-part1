@@ -507,6 +507,147 @@
     margin: 2px 0;
   }
 
+  /* PROGRESS DASHBOARD */
+  .progress-dashboard {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 16px;
+  }
+  .pg-card {
+    background: linear-gradient(135deg, var(--ori-blue-ghost), white);
+    border: 1px solid rgba(0,87,184,0.1);
+    border-radius: 16px;
+    padding: 20px 12px;
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+  }
+  .pg-icon { font-size: 28px; margin-bottom: 6px; }
+  .pg-val {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 30px;
+    font-weight: 800;
+    color: var(--ori-blue-dark);
+    line-height: 1.1;
+  }
+  .pg-label { font-size: 12.5px; color: var(--ori-text-light); font-weight: 500; margin-top: 4px; }
+  .pg-wordbar-wrap {
+    background: rgba(0,87,184,0.08);
+    border-radius: 50px;
+    height: 12px;
+    overflow: hidden;
+    margin: 6px 0 4px;
+  }
+  .pg-wordbar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--ori-blue), var(--ori-accent));
+    border-radius: 50px;
+    transition: width 0.6s cubic-bezier(0.4,0,0.2,1);
+  }
+  .pg-reset {
+    background: none;
+    border: 1px solid rgba(239,68,68,0.3);
+    color: var(--ori-error);
+    border-radius: 10px;
+    padding: 8px 16px;
+    font-family: 'Be Vietnam Pro', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .pg-reset:hover { background: #FEE2E2; }
+
+  /* SPEED CONTROL */
+  .rate-control {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--ori-blue-ghost);
+    border: 1px solid rgba(0,87,184,0.12);
+    border-radius: 50px;
+    padding: 4px;
+  }
+  .rate-control .rate-label { font-size: 12px; color: var(--ori-text-light); font-weight: 600; padding-left: 8px; }
+  .rate-btn {
+    border: none;
+    background: transparent;
+    color: var(--ori-text-light);
+    border-radius: 50px;
+    padding: 6px 14px;
+    font-family: 'Be Vietnam Pro', sans-serif;
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .rate-btn.active { background: var(--ori-blue); color: white; box-shadow: var(--shadow-sm); }
+
+  /* DICTATION */
+  .dictation-box {
+    background: white;
+    border: 1px solid rgba(0,87,184,0.1);
+    border-radius: 18px;
+    padding: 28px 24px;
+    box-shadow: var(--shadow-md);
+    text-align: center;
+  }
+  .dict-progress { font-size: 13px; color: var(--ori-text-light); font-weight: 600; margin-bottom: 16px; }
+  .dict-play-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(135deg, var(--ori-blue), var(--ori-blue-light));
+    color: white;
+    border: none;
+    border-radius: 14px;
+    padding: 16px 32px;
+    font-family: 'Be Vietnam Pro', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: var(--shadow-md);
+    transition: all 0.2s;
+  }
+  .dict-play-btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+  .dict-hint { font-size: 13px; color: var(--ori-text-light); margin: 14px 0 8px; }
+  .dict-vi { font-size: 15px; color: var(--ori-blue-dark); font-weight: 600; margin-bottom: 16px; min-height: 22px; }
+  .dict-input {
+    width: 100%;
+    max-width: 460px;
+    padding: 13px 18px;
+    border: 2px solid rgba(0,87,184,0.15);
+    border-radius: 12px;
+    font-family: 'Be Vietnam Pro', sans-serif;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.3s;
+    text-align: center;
+  }
+  .dict-input:focus { border-color: var(--ori-blue); }
+  .dict-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 16px; }
+  .dict-btn {
+    border: none;
+    border-radius: 10px;
+    padding: 11px 22px;
+    font-family: 'Be Vietnam Pro', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .dict-check { background: var(--ori-success); color: white; }
+  .dict-check:hover { filter: brightness(1.05); }
+  .dict-reveal { background: var(--ori-blue-pale); color: var(--ori-blue-dark); }
+  .dict-reveal:hover { background: #DCEBFF; }
+  .dict-feedback { margin-top: 16px; font-size: 15px; font-weight: 600; min-height: 24px; }
+
+  @media (max-width: 600px) {
+    .progress-dashboard { grid-template-columns: repeat(2, 1fr); }
+    .pg-val { font-size: 26px; }
+  }
+
   /* CHECK BUTTON */
   .check-btn {
     display: inline-flex;
@@ -1188,6 +1329,33 @@
     </div>
   </div>
 
+  <!-- TIẾN ĐỘ -->
+  <div class="section" id="progressSection">
+    <div class="section-label">📊 Tiến độ</div>
+    <div class="section-title">Hành Trình Chinh Phục 6/6</div>
+    <div class="section-desc">Tiến độ được lưu tự động trên thiết bị này. Học mỗi ngày (làm quiz hoặc flashcard) để giữ chuỗi 🔥 streak!</div>
+
+    <div class="progress-dashboard">
+      <div class="pg-card"><div class="pg-icon">🔥</div><div class="pg-val" id="pgStreak">0</div><div class="pg-label">Ngày liên tiếp</div></div>
+      <div class="pg-card"><div class="pg-icon">📅</div><div class="pg-val" id="pgDays">0</div><div class="pg-label">Tổng ngày học</div></div>
+      <div class="pg-card"><div class="pg-icon">📖</div><div class="pg-val" id="pgWords">0</div><div class="pg-label">Từ đã thuộc</div></div>
+      <div class="pg-card"><div class="pg-icon">🎯</div><div class="pg-val" id="pgQuiz">0/3</div><div class="pg-label">Quiz tốt nhất</div></div>
+    </div>
+
+    <div style="background:white;border:1px solid rgba(0,87,184,0.1);border-radius:14px;padding:16px 20px;box-shadow:var(--shadow-sm);">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+        <span style="font-size:13px;font-weight:600;color:var(--ori-text);">📖 Tiến độ thuộc từ vựng</span>
+        <span style="font-size:13px;font-weight:600;color:var(--ori-blue);" id="pgWordPct">0/180 cụm (0%)</span>
+      </div>
+      <div class="pg-wordbar-wrap"><div class="pg-wordbar" id="pgWordBar"></div></div>
+      <div style="font-size:12px;color:var(--ori-text-light);margin-top:6px;">💡 Đánh dấu "Đã biết" ở trò chơi Flashcard để cập nhật tiến độ này.</div>
+    </div>
+
+    <div style="text-align:right;margin-top:14px;">
+      <button class="pg-reset" onclick="resetProgress()">🗑️ Xóa tiến độ</button>
+    </div>
+  </div>
+
   <!-- 4 CHIẾN LƯỢC -->
   <div class="section">
     <div class="section-label">🧠 Chiến lược</div>
@@ -1372,6 +1540,15 @@
     <div class="section-label">🎮 Luyện tập</div>
     <div class="section-title">Ví Dụ Minh Họa & Thực Hành</div>
     <div class="section-desc">Hãy chọn đáp án bạn cho là đúng rồi bấm "Kiểm tra" để xem giải thích chi tiết.</div>
+
+    <div style="margin-bottom:18px;">
+      <div class="rate-control">
+        <span class="rate-label">🔊 Tốc độ:</span>
+        <button class="rate-btn" onclick="setSpeechRate(0.7, this)">🐢 Chậm</button>
+        <button class="rate-btn active" onclick="setSpeechRate(0.85, this)">🚶 Bình thường</button>
+        <button class="rate-btn" onclick="setSpeechRate(1, this)">🏃 Nhanh</button>
+      </div>
+    </div>
 
     <!-- Score -->
     <div class="score-bar">
@@ -1665,6 +1842,36 @@
   </div>
 
 
+  <!-- DICTATION - LUYỆN NGHE CHÉP -->
+  <div class="section">
+    <div class="section-label">✍️ Nghe chép</div>
+    <div class="section-title">Luyện Nghe Chép Chính Tả (Dictation)</div>
+    <div class="section-desc">Kỹ năng "vàng" cho Part 1: nghe cụm từ rồi gõ lại. Luyện tai bắt từng âm — đúng cả động từ lẫn tân ngữ!</div>
+
+    <div style="margin-bottom:18px;">
+      <div class="rate-control">
+        <span class="rate-label">🔊 Tốc độ:</span>
+        <button class="rate-btn" onclick="setSpeechRate(0.7, this)">🐢 Chậm</button>
+        <button class="rate-btn active" onclick="setSpeechRate(0.85, this)">🚶 Bình thường</button>
+        <button class="rate-btn" onclick="setSpeechRate(1, this)">🏃 Nhanh</button>
+      </div>
+    </div>
+
+    <div class="dictation-box">
+      <div class="dict-progress"><span id="dictDone">0</span>/<span id="dictTotal">10</span> câu &nbsp;•&nbsp; Đúng: <span id="dictCorrect" style="color:var(--ori-success);font-weight:700;">0</span></div>
+      <button class="dict-play-btn" onclick="playDictation()">🔊 Nghe cụm từ</button>
+      <div class="dict-hint">Nghĩa tiếng Việt (gợi ý):</div>
+      <div class="dict-vi" id="dictVi">—</div>
+      <input type="text" class="dict-input" id="dictInput" placeholder="Gõ cụm từ tiếng Anh bạn nghe được..." autocomplete="off" onkeydown="if(event.key==='Enter')checkDictation()">
+      <div class="dict-actions">
+        <button class="dict-btn dict-check" onclick="checkDictation()">✅ Kiểm tra</button>
+        <button class="dict-btn dict-reveal" onclick="revealDictation()">👁️ Xem đáp án</button>
+      </div>
+      <div class="dict-feedback" id="dictFeedback"></div>
+      <button class="check-btn" onclick="startDictation()" style="margin-top:18px;">🔄 Bộ câu mới</button>
+    </div>
+  </div>
+
   <!-- =============================== -->
   <!-- 🎮 VOCAB QUIZ GAMES SECTION     -->
   <!-- =============================== -->
@@ -1855,7 +2062,7 @@
     window.speechSynthesis.cancel();
     const utter = new SpeechSynthesisUtterance(text);
     utter.lang = 'en-US';
-    utter.rate = 0.85;
+    utter.rate = (typeof speechRate !== 'undefined') ? speechRate : 0.85;
     utter.pitch = 1;
     // Try to pick a good English voice
     const voices = window.speechSynthesis.getVoices();
@@ -1904,7 +2111,7 @@
       const letter = opt.querySelector('.opt-letter').textContent.trim();
       const text = opt.querySelector('.opt-text').textContent.trim();
       const u = new SpeechSynthesisUtterance(`${letter}. ${text}`);
-      u.lang = 'en-US'; u.rate = 0.9; u.pitch = 1;
+      u.lang = 'en-US'; u.rate = speechRate; u.pitch = 1;
       if (enVoice) u.voice = enVoice;
       u.onend = () => { i++; setTimeout(next, 650); };
       u.onerror = () => { i++; setTimeout(next, 300); };
@@ -1920,10 +2127,79 @@
     btn.innerHTML = on ? '👁️ Hiện lời thoại' : '🙈 Ẩn lời thoại (như thi thật)';
   }
 
+  // ===== TỐC ĐỘ PHÁT ÂM (chậm / bình thường) =====
+  let speechRate = 0.85;
+  function setSpeechRate(rate, btn) {
+    speechRate = rate;
+    document.querySelectorAll('.rate-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+  }
+
+  // ===== LƯU TIẾN ĐỘ HỌC (localStorage) =====
+  const PROGRESS_KEY = 'oriToeicP1Progress';
+  let progress = loadProgress();
+
+  function loadProgress() {
+    try { return JSON.parse(localStorage.getItem(PROGRESS_KEY)) || {}; }
+    catch (e) { return {}; }
+  }
+  function saveProgress() {
+    try { localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress)); } catch (e) {}
+    renderProgress();
+  }
+  function dateStr(d) {
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  }
+  function todayStr() { return dateStr(new Date()); }
+  function yesterdayStr() { const d = new Date(); d.setDate(d.getDate() - 1); return dateStr(d); }
+
+  function markStudiedToday() {
+    const today = todayStr();
+    if (progress.lastStudy === today) return; // hôm nay đã tính rồi
+    if (progress.lastStudy === yesterdayStr()) progress.streak = (progress.streak || 0) + 1;
+    else progress.streak = 1;
+    progress.lastStudy = today;
+    progress.totalDays = (progress.totalDays || 0) + 1;
+  }
+  function markWordKnown(en) {
+    progress.knownWords = progress.knownWords || {};
+    progress.knownWords[en] = true;
+  }
+  function knownCount() { return progress.knownWords ? Object.keys(progress.knownWords).length : 0; }
+
+  function renderProgress() {
+    // streak bị đứt nếu lần học gần nhất không phải hôm nay/hôm qua
+    let s = progress.streak || 0;
+    if (progress.lastStudy && progress.lastStudy !== todayStr() && progress.lastStudy !== yesterdayStr()) s = 0;
+    const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+    set('pgStreak', s);
+    set('pgDays', progress.totalDays || 0);
+    set('pgWords', knownCount());
+    set('pgQuiz', (progress.quizBest || 0) + '/3');
+    const total = vocabData.length;
+    const pct = Math.round((knownCount() / total) * 100);
+    const bar = document.getElementById('pgWordBar');
+    if (bar) bar.style.width = pct + '%';
+    const lbl = document.getElementById('pgWordPct');
+    if (lbl) lbl.textContent = `${knownCount()}/${total} cụm (${pct}%)`;
+  }
+  function resetProgress() {
+    if (confirm('Xóa toàn bộ tiến độ học trên thiết bị này? Hành động này không thể hoàn tác.')) {
+      progress = {};
+      saveProgress();
+    }
+  }
+
   // Quiz Data
   const answers = {
     1: {
       correct: 'B',
+      optExp: {
+        A: '<strong>(A) "talking on the phone"</strong> → Sai! Ảnh không hề thấy điện thoại trên tay hay bên tai.',
+        B: '<strong>(B)</strong> chính là đáp án đúng — bạn chọn nhầm sang câu khác rồi.',
+        C: '<strong>(C) "leaving the office"</strong> → Bẫy suy diễn! Cô ấy đang NGỒI tại bàn, không đứng dậy rời đi.',
+        D: '<strong>(D) "turning off the computer"</strong> → Sai hành động! Cô ấy đang xem tài liệu, không thao tác tắt máy.'
+      },
       explanations: {
         correct: {
           title: '🎉 Chính xác! Đáp án B',
@@ -1942,6 +2218,12 @@
     },
     2: {
       correct: 'B',
+      optExp: {
+        A: '<strong>(A) "entering the building"</strong> → Bẫy suy diễn! Họ đang đứng TRƯỚC tòa nhà, không phải đang bước vào.',
+        B: '<strong>(B)</strong> chính là đáp án đúng — bạn chọn nhầm sang câu khác rồi.',
+        C: '<strong>(C) "waving to each other"</strong> → Sai hành động! Bắt tay (shaking hands) ≠ vẫy tay (waving).',
+        D: '<strong>(D) "handing documents"</strong> → Sai! Không thấy tài liệu nào được trao trong ảnh.'
+      },
       explanations: {
         correct: {
           title: '🎉 Xuất sắc! Đáp án B',
@@ -1960,6 +2242,12 @@
     },
     3: {
       correct: 'C',
+      optExp: {
+        A: '<strong>(A) "fisherman casting net"</strong> → Sai! Ảnh KHÔNG CÓ NGƯỜI nào cả.',
+        B: '<strong>(B) "sailing across the ocean"</strong> → Sai trạng thái! Thuyền đang ĐẬU, không di chuyển — bẫy State vs Action kinh điển.',
+        C: '<strong>(C)</strong> chính là đáp án đúng — bạn chọn nhầm sang câu khác rồi.',
+        D: '<strong>(D) "people boarding the boats"</strong> → Sai! Không có người nào trong ảnh để lên thuyền.'
+      },
       explanations: {
         correct: {
           title: '🎉 Tuyệt vời! Đáp án C',
@@ -2016,7 +2304,12 @@
     const exp = document.getElementById(`exp${q}`);
     const data = isCorrect ? answers[q].explanations.correct : answers[q].explanations.incorrect;
     exp.querySelector('h4').innerHTML = data.title;
-    exp.querySelector('p').innerHTML = data.text;
+    let bodyHTML = data.text;
+    if (!isCorrect && answers[q].optExp && answers[q].optExp[selected]) {
+      bodyHTML = `<div style="background:#FEE2E2;border-left:4px solid var(--ori-error);border-radius:8px;padding:10px 14px;margin-bottom:14px;">
+        <strong style="color:var(--ori-error);">Vì sao bạn chọn (${selected}) sai?</strong><br>${answers[q].optExp[selected]}</div>` + data.text;
+    }
+    exp.querySelector('p').innerHTML = bodyHTML;
     exp.className = `explanation show ${isCorrect ? 'correct-exp' : 'incorrect-exp'}`;
 
     document.getElementById(`check${q}`).disabled = true;
@@ -2026,6 +2319,12 @@
     const total = Object.keys(checkedQuestions).length;
     document.getElementById('scoreNum').textContent = `${score}/${total}`;
     document.getElementById('progressFill').style.width = `${(total / 3) * 100}%`;
+
+    // Lưu tiến độ + ghi nhận hoạt động học hôm nay
+    progress.quizBest = Math.max(progress.quizBest || 0, score);
+    progress.quizDone = total;
+    markStudiedToday();
+    saveProgress();
   }
 
   // ===== 160 VOCAB PHRASES =====
@@ -2374,8 +2673,15 @@
 
   function fcAnswer(known) {
     if (fcIndex >= fcCards.length) return;
-    if (known) fcKnown++; else fcUnknown++;
+    if (known) {
+      fcKnown++;
+      if (fcCards[fcIndex] && fcCards[fcIndex].en) markWordKnown(fcCards[fcIndex].en);
+    } else {
+      fcUnknown++;
+    }
     fcIndex++;
+    markStudiedToday();
+    saveProgress();
     showFlashcard();
   }
 
@@ -2713,8 +3019,75 @@
     }, 1800);
   }
 
+  // ===== DICTATION (NGHE CHÉP) =====
+  let dictPool = [], dictIdx = 0, dictCorrect = 0, dictRevealed = false;
+
+  function startDictation() {
+    dictPool = shuffle(vocabData.filter(v => !v.en.includes('/'))).slice(0, 10);
+    dictIdx = 0; dictCorrect = 0; dictRevealed = false;
+    const t = document.getElementById('dictTotal'); if (t) t.textContent = dictPool.length;
+    showDictation(false);
+  }
+
+  function showDictation(autoPlay) {
+    dictRevealed = false;
+    const fb = document.getElementById('dictFeedback'); if (fb) fb.innerHTML = '';
+    const inp = document.getElementById('dictInput');
+    const viEl = document.getElementById('dictVi');
+    if (dictIdx >= dictPool.length) {
+      const pct = dictPool.length ? Math.round((dictCorrect / dictPool.length) * 100) : 0;
+      const emoji = pct >= 90 ? '🏆' : pct >= 70 ? '🎉' : pct >= 50 ? '👍' : '💪';
+      if (viEl) viEl.innerHTML = `${emoji} Hoàn thành! Đúng ${dictCorrect}/${dictPool.length} (${pct}%) — bấm "Bộ câu mới" để luyện tiếp.`;
+      if (inp) { inp.value = ''; inp.disabled = true; }
+      const d = document.getElementById('dictDone'); if (d) d.textContent = dictPool.length;
+      return;
+    }
+    if (inp) { inp.value = ''; inp.disabled = false; inp.focus(); }
+    if (viEl) viEl.textContent = dictPool[dictIdx].vi;
+    const d = document.getElementById('dictDone'); if (d) d.textContent = dictIdx;
+    const c = document.getElementById('dictCorrect'); if (c) c.textContent = dictCorrect;
+    if (autoPlay) setTimeout(playDictation, 300);
+  }
+
+  function playDictation() {
+    if (dictIdx < dictPool.length) speakEN(dictPool[dictIdx].en);
+  }
+
+  function checkDictation() {
+    if (dictIdx >= dictPool.length) return;
+    const inp = document.getElementById('dictInput');
+    const val = inp.value.trim().toLowerCase();
+    if (!val) return;
+    const correct = dictPool[dictIdx].en.toLowerCase();
+    const normalize = s => s.replace(/[^a-z\s]/g, '').replace(/\s+/g, ' ').trim();
+    const ok = normalize(val) === normalize(correct) || val.replace(/\s/g, '') === correct.replace(/\s/g, '');
+    const fb = document.getElementById('dictFeedback');
+    if (ok) {
+      if (!dictRevealed) dictCorrect++;
+      fb.style.color = 'var(--ori-success)';
+      fb.innerHTML = `✅ Chính xác! <strong>${dictPool[dictIdx].en}</strong>`;
+    } else {
+      fb.style.color = 'var(--ori-error)';
+      fb.innerHTML = `❌ Đáp án đúng: <strong>${dictPool[dictIdx].en}</strong>`;
+    }
+    document.getElementById('dictCorrect').textContent = dictCorrect;
+    markStudiedToday(); saveProgress();
+    dictIdx++;
+    setTimeout(() => showDictation(true), 1900);
+  }
+
+  function revealDictation() {
+    if (dictIdx >= dictPool.length) return;
+    dictRevealed = true;
+    const fb = document.getElementById('dictFeedback');
+    fb.style.color = 'var(--ori-blue-dark)';
+    fb.innerHTML = `👁️ Đáp án: <strong>${dictPool[dictIdx].en}</strong> — nghe lại rồi gõ để kiểm tra nhé!`;
+  }
+
   // Initial game setup
   resetFlashcard();
+  renderProgress();
+  startDictation();
 </script>
 </body>
 </html>
