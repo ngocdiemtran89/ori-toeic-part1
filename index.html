@@ -3454,6 +3454,7 @@
     tpStart();
   }
   let tpIdx = 0, tpScore = 0, tpSelected = null, tpChecked = false;
+  let tpOrder = ['A', 'B', 'C', 'D']; // ánh xạ vị trí hiển thị → đáp án gốc (đảo ngẫu nhiên mỗi câu)
 
   function tpStart() {
     tpIdx = 0; tpScore = 0;
@@ -3470,11 +3471,13 @@
     document.getElementById('tpScore').textContent = tpScore;
     document.getElementById('tpType').textContent = q.typeLabel;
     document.getElementById('tpImg').src = q.img;
+    tpOrder = shuffle(['A', 'B', 'C', 'D']); // đảo ngẫu nhiên vị trí đáp án
     const opts = document.getElementById('tpOptions');
     opts.className = 'answer-options';
-    opts.innerHTML = ['A', 'B', 'C', 'D'].map(L =>
-      `<div class="answer-opt" data-opt="${L}" onclick="tpSelect('${L}')"><div class="opt-letter">${L}</div><div class="opt-text">${q.options[L]}</div></div>`
-    ).join('');
+    opts.innerHTML = tpOrder.map((origKey, i) => {
+      const disp = 'ABCD'[i];
+      return `<div class="answer-opt" data-opt="${disp}" data-orig="${origKey}" onclick="tpSelect('${disp}')"><div class="opt-letter">${disp}</div><div class="opt-text">${q.options[origKey]}</div></div>`;
+    }).join('');
     document.getElementById('tpHideBtn').innerHTML = '🙈 Ẩn lời thoại (như thi thật)';
     const chk = document.getElementById('tpCheck');
     chk.style.display = 'inline-flex'; chk.disabled = true; chk.innerHTML = '✨ Kiểm tra';
@@ -3499,10 +3502,12 @@
     if (tpChecked || !tpSelected) return;
     tpChecked = true;
     const q = tpQs()[tpIdx];
-    const ok = tpSelected === q.correct;
+    const correctDisp = 'ABCD'[tpOrder.indexOf(q.correct)]; // vị trí hiển thị của đáp án đúng
+    const selectedOrig = tpOrder['ABCD'.indexOf(tpSelected)]; // đáp án gốc của ô vừa chọn
+    const ok = tpSelected === correctDisp;
     document.querySelectorAll('#tpOptions .answer-opt').forEach(o => {
       o.style.cursor = 'default';
-      if (o.dataset.opt === q.correct) o.classList.add('correct');
+      if (o.dataset.opt === correctDisp) o.classList.add('correct');
       if (o.dataset.opt === tpSelected && !ok) o.classList.add('incorrect');
       o.classList.remove('selected');
     });
@@ -3510,11 +3515,11 @@
     document.getElementById('tpScore').textContent = tpScore;
     const exp = document.getElementById('tpExp');
     let html = ok
-      ? `🎉 Chính xác! Đáp án (${q.correct}): "<strong>${q.options[q.correct]}</strong>".<br><br>`
-      : `Đáp án đúng là (${q.correct}): "<strong>${q.options[q.correct]}</strong>".<br><br>
-         <div style="background:#FEE2E2;border-left:4px solid var(--ori-error);border-radius:8px;padding:10px 14px;margin-bottom:12px;"><strong style="color:var(--ori-error);">Vì sao bạn chọn (${tpSelected}) sai?</strong><br>${q.exp[tpSelected]}</div>`;
+      ? `🎉 Chính xác! Đáp án (${correctDisp}): "<strong>${q.options[q.correct]}</strong>".<br><br>`
+      : `Đáp án đúng là (${correctDisp}): "<strong>${q.options[q.correct]}</strong>".<br><br>
+         <div style="background:#FEE2E2;border-left:4px solid var(--ori-error);border-radius:8px;padding:10px 14px;margin-bottom:12px;"><strong style="color:var(--ori-error);">Vì sao bạn chọn (${tpSelected}) sai?</strong><br>${q.exp[selectedOrig]}</div>`;
     html += '<strong>Phân tích cả 4 đáp án:</strong><br>' +
-      ['A', 'B', 'C', 'D'].map(L => `• (${L}) ${L === q.correct ? '✅' : '✗'} ${q.exp[L]}`).join('<br>');
+      tpOrder.map((origKey, i) => `• (${'ABCD'[i]}) ${origKey === q.correct ? '✅' : '✗'} ${q.exp[origKey]}`).join('<br>');
     exp.querySelector('h4').innerHTML = ok ? '🎉 Tuyệt vời!' : '📖 Cùng xem lại nào';
     exp.querySelector('p').innerHTML = html;
     exp.className = `explanation show ${ok ? 'correct-exp' : 'incorrect-exp'}`;
