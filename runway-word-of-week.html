@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Word of the Week: RUNWAY — Carousel TikTok | ORI Aviation English</title>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0A1E3F;            /* nền chính */
+    --navy-2:#12274F;          /* nền phụ */
+    --navy-3:#0E2247;
+    --sky:#4FA9FF;             /* sky blue minh hoạ */
+    --sky-soft:#8FCBFF;
+    --sky-ghost:rgba(79,169,255,.14);
+    --white:#FFFFFF;
+    --ink-soft:#C7D6EE;        /* text phụ trên nền tối */
+    --orange:#FF8A3D;          /* nhấn ≠ / quiz / CTA */
+    --orange-soft:#FFB877;
+    --amber:#FFC24B;
+    --green:#22C55E;
+    --line:rgba(255,255,255,.10);
+    --slideW:1080px;
+    --slideH:1350px;           /* 4:5 */
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{background:#070f20;font-family:'Be Vietnam Pro',sans-serif;color:var(--white);-webkit-font-smoothing:antialiased}
+
+  /* ============ TRANG ĐIỀU KHIỂN ============ */
+  .page{max-width:1200px;margin:0 auto;padding:40px 20px 80px}
+  .topbar{text-align:center;margin-bottom:8px}
+  .topbar .kicker{display:inline-block;background:var(--sky-ghost);border:1px solid rgba(79,169,255,.35);color:var(--sky-soft);
+    padding:7px 18px;border-radius:50px;font-size:12px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase}
+  .topbar h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(26px,4vw,40px);font-weight:700;margin:16px 0 8px}
+  .topbar h1 b{color:var(--orange)}
+  .topbar p{color:var(--ink-soft);font-size:15px;max-width:620px;margin:0 auto;line-height:1.6}
+
+  .toolbar{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:26px 0 34px}
+  .btn{font-family:'Be Vietnam Pro';font-weight:600;font-size:14px;border:none;cursor:pointer;border-radius:12px;
+    padding:12px 22px;transition:.2s;display:inline-flex;align-items:center;gap:8px}
+  .btn-primary{background:var(--orange);color:#3a1c05}
+  .btn-primary:hover{background:var(--orange-soft);transform:translateY(-2px)}
+  .btn-ghost{background:rgba(255,255,255,.08);color:var(--white);border:1px solid var(--line)}
+  .btn-ghost:hover{background:rgba(255,255,255,.14)}
+  .hint{text-align:center;color:var(--ink-soft);font-size:13px;margin:-18px 0 30px;opacity:.8}
+
+  /* ============ LƯỚI SLIDE ============ */
+  .deck{display:flex;flex-direction:column;align-items:center;gap:46px}
+  .slide-wrap{width:100%;max-width:540px}
+  .slide-cap{display:flex;justify-content:space-between;align-items:center;color:var(--ink-soft);font-size:13px;
+    font-weight:600;margin-bottom:10px;padding:0 4px}
+  .slide-cap b{color:var(--sky-soft)}
+
+  /* Slide vật lý 1080x1350 -> scale về khung hiển thị */
+  .slide{width:var(--slideW);height:var(--slideH);transform-origin:top left;
+    background:radial-gradient(120% 90% at 80% -10%, #163264 0%, var(--navy) 55%, #071734 100%);
+    border-radius:36px;overflow:hidden;position:relative;color:var(--white)}
+  .frame{position:relative;width:100%;height:100%;padding:100px 90px;display:flex;flex-direction:column}
+
+  /* nền hoạ tiết mờ */
+  .slide::before{content:'';position:absolute;inset:0;
+    background:
+      radial-gradient(circle at 15% 12%, rgba(79,169,255,.10) 0%, transparent 40%),
+      radial-gradient(circle at 92% 88%, rgba(255,138,61,.10) 0%, transparent 42%);
+    pointer-events:none}
+  .grid-lines{position:absolute;inset:0;opacity:.05;
+    background-image:linear-gradient(var(--sky) 1px,transparent 1px),linear-gradient(90deg,var(--sky) 1px,transparent 1px);
+    background-size:90px 90px}
+
+  /* thương hiệu góc */
+  .brand{position:absolute;left:90px;bottom:70px;display:flex;align-items:center;gap:14px;z-index:3}
+  .brand .dot{width:14px;height:14px;border-radius:50%;background:var(--orange);box-shadow:0 0 0 6px rgba(255,138,61,.18)}
+  .brand span{font-family:'Space Grotesk';font-weight:600;font-size:24px;letter-spacing:.5px;color:var(--white)}
+  .brand small{display:block;font-family:'Be Vietnam Pro';font-weight:400;font-size:16px;color:var(--ink-soft);letter-spacing:.3px}
+  .pageno{position:absolute;right:90px;bottom:70px;z-index:3;font-family:'Space Grotesk';font-weight:600;
+    font-size:22px;color:var(--sky-soft)}
+  .pageno i{color:rgba(255,255,255,.35);font-style:normal}
+
+  .eyebrow{display:inline-flex;align-items:center;gap:12px;font-size:22px;font-weight:700;letter-spacing:4px;
+    text-transform:uppercase;color:var(--sky-soft)}
+  .eyebrow .bar{width:46px;height:4px;border-radius:4px;background:var(--orange)}
+
+  .content{flex:1;display:flex;flex-direction:column;justify-content:center;z-index:2;position:relative}
+
+  /* Tiêu đề tiếng Việt lớn / tiếng Anh nhỏ hơn 15-25% */
+  h2.vi{font-family:'Be Vietnam Pro';font-weight:800;line-height:1.08;font-size:104px}
+  .en{font-family:'Be Vietnam Pro';font-weight:500;color:var(--ink-soft)}
+  .neq{color:var(--orange)}
+
+  /* SLIDE 1 */
+  .s1 .hookword{font-family:'Space Grotesk';font-weight:700;font-size:120px;line-height:1.02;letter-spacing:-1px}
+  .s1 .hookword .neq{font-size:130px;vertical-align:-6px;margin:0 6px}
+  .s1 .sub{font-size:40px;font-weight:500;color:var(--ink-soft);margin-top:38px;max-width:820px;line-height:1.35}
+  .s1 .pill{display:inline-block;margin-bottom:40px;background:var(--sky-ghost);border:1px solid rgba(79,169,255,.4);
+    color:var(--sky-soft);font-weight:700;letter-spacing:4px;text-transform:uppercase;font-size:26px;padding:14px 30px;border-radius:60px}
+
+  /* thẻ định nghĩa dùng chung */
+  .card{background:linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.03));
+    border:1px solid var(--line);border-radius:28px;padding:46px 50px;position:relative;overflow:hidden}
+  .card + .card{margin-top:34px}
+  .card .tag{display:inline-flex;align-items:center;gap:12px;font-family:'Space Grotesk';font-weight:700;
+    font-size:34px;letter-spacing:1px;margin-bottom:22px}
+  .card.run .tag{color:var(--orange)}
+  .card.taxi .tag{color:var(--sky)}
+  .card .tag .ic{width:56px;height:56px;border-radius:14px;display:grid;place-items:center;font-size:30px}
+  .card.run .tag .ic{background:rgba(255,138,61,.16)}
+  .card.taxi .tag .ic{background:rgba(79,169,255,.16)}
+  .card .def-en{font-size:44px;font-weight:700;line-height:1.22;color:var(--white)}
+  .card .def-vi{font-size:34px;font-weight:400;line-height:1.35;color:var(--ink-soft);margin-top:14px}
+  .card .accent-strip{position:absolute;left:0;top:0;bottom:0;width:10px}
+  .card.run .accent-strip{background:var(--orange)}
+  .card.taxi .accent-strip{background:var(--sky)}
+
+  .note{margin-top:30px;display:flex;gap:14px;align-items:flex-start;color:var(--ink-soft);font-size:28px;line-height:1.4}
+  .note .q{color:var(--orange);font-size:34px;line-height:1}
+
+  /* SLIDE 4 dấu hiệu nhận biết */
+  .memrow{display:flex;flex-direction:column;gap:30px;margin-top:10px}
+  .mem{display:flex;align-items:center;gap:30px;background:rgba(255,255,255,.05);border:1px solid var(--line);
+    border-radius:26px;padding:40px 44px}
+  .mem .big{font-family:'Space Grotesk';font-weight:700;font-size:58px;line-height:1;white-space:nowrap}
+  .mem.run .big u{color:var(--orange);text-decoration:none}
+  .mem.taxi .big u{color:var(--sky);text-decoration:none}
+  .mem .arrow{color:rgba(255,255,255,.3);font-size:46px}
+  .mem .desc .en2{font-size:34px;font-weight:600;color:var(--white)}
+  .mem .desc .vi2{font-size:30px;color:var(--ink-soft);margin-top:6px}
+
+  /* SLIDE 5 ví dụ câu */
+  .ex{background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:26px;padding:42px 46px;position:relative}
+  .ex + .ex{margin-top:32px}
+  .ex .num{position:absolute;top:-26px;left:40px;background:var(--orange);color:#3a1c05;font-family:'Space Grotesk';
+    font-weight:700;font-size:26px;width:56px;height:56px;border-radius:50%;display:grid;place-items:center}
+  .ex .en3{font-size:42px;font-weight:700;line-height:1.28}
+  .ex .en3 .hl{color:var(--orange)}
+  .ex .en3 .hl-sky{color:var(--sky)}
+  .ex .vi3{font-size:32px;color:var(--ink-soft);margin-top:16px;line-height:1.35}
+
+  /* SLIDE 6 quiz */
+  .quiz-q{font-size:52px;font-weight:800;line-height:1.2;margin-bottom:10px}
+  .quiz-q .en-q{display:block;font-size:34px;font-weight:500;color:var(--ink-soft);margin-top:14px}
+  .opts{display:flex;flex-direction:column;gap:26px;margin-top:46px}
+  .opt{display:flex;align-items:center;gap:28px;background:#FFFFFF;color:#0A1E3F;border-radius:24px;padding:38px 44px;
+    font-size:46px;font-weight:700;box-shadow:0 20px 40px rgba(0,0,0,.25)}
+  .opt .key{width:70px;height:70px;border-radius:18px;background:var(--navy);color:var(--white);
+    font-family:'Space Grotesk';display:grid;place-items:center;font-size:40px;flex:none}
+  .opt.correct{background:linear-gradient(90deg,#DFFBE9,#BFF3D4)}
+  .opt.correct .key{background:var(--green)}
+  .quiz-hint{margin-top:40px;text-align:center;color:var(--orange-soft);font-size:30px;font-weight:600}
+
+  /* SLIDE 7 đáp án + CTA */
+  .answer{text-align:center}
+  .answer .badge{display:inline-flex;align-items:center;gap:20px;background:linear-gradient(90deg,#1a7a44,#22C55E);
+    border-radius:60px;padding:26px 54px;font-size:64px;font-weight:800;font-family:'Space Grotesk'}
+  .answer .badge .check{width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,.25);display:grid;place-items:center;font-size:40px}
+  .answer .reveal{font-size:40px;color:var(--ink-soft);margin-top:34px}
+  .cta{margin-top:64px;background:var(--orange);color:#3a1c05;border-radius:30px;padding:52px 46px;text-align:center;
+    box-shadow:0 26px 60px rgba(255,138,61,.35)}
+  .cta .save{display:flex;align-items:center;justify-content:center;gap:20px;font-size:56px;font-weight:800;font-family:'Space Grotesk'}
+  .cta .save svg{width:56px;height:56px}
+  .cta .en-cta{font-size:36px;font-weight:600;margin-top:14px;color:#5a2c08}
+
+  /* ============ CAPTION BOX ============ */
+  .cap-section{margin-top:70px}
+  .cap-section h3{font-family:'Space Grotesk';font-size:24px;font-weight:700;text-align:center;margin-bottom:6px}
+  .cap-section .sub{text-align:center;color:var(--ink-soft);font-size:14px;margin-bottom:22px}
+  .cap-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  @media(max-width:760px){.cap-grid{grid-template-columns:1fr}}
+  .cap-card{background:var(--navy-2);border:1px solid var(--line);border-radius:20px;padding:24px}
+  .cap-card h4{font-size:14px;letter-spacing:1.5px;text-transform:uppercase;color:var(--sky-soft);margin-bottom:14px;
+    display:flex;justify-content:space-between;align-items:center}
+  .cap-card pre{white-space:pre-wrap;font-family:'Be Vietnam Pro';font-size:14.5px;line-height:1.7;color:#E7EEFB}
+  .copy{background:rgba(79,169,255,.15);border:1px solid rgba(79,169,255,.35);color:var(--sky-soft);
+    font-size:12px;font-weight:600;padding:6px 14px;border-radius:8px;cursor:pointer}
+  .copy:hover{background:rgba(79,169,255,.28)}
+  .tags{margin-top:14px;color:var(--sky-soft);font-size:14px;line-height:1.9;font-weight:500}
+
+  .footer{text-align:center;color:var(--ink-soft);font-size:13px;margin-top:50px;opacity:.7;line-height:1.7}
+
+  /* IN / EXPORT: mỗi slide 1 trang */
+  @media print{
+    body{background:#fff}
+    .page>*:not(.deck){display:none!important}
+    .deck{gap:0}
+    .slide-wrap{max-width:none}
+    .slide-cap{display:none}
+    .slide{border-radius:0;page-break-after:always;box-shadow:none}
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="topbar">
+    <span class="kicker">ORI · Aviation English · Word of the Week</span>
+    <h1>Carousel Thứ 2: <b>RUNWAY ≠ TAXIWAY</b></h1>
+    <p>7 slide song ngữ tỉ lệ 4:5 (1080×1350) — chuẩn để đăng carousel TikTok. Bấm “Tải ảnh” để xuất từng slide, hoặc dùng nút In → lưu PDF. Caption + hashtag nằm cuối trang.</p>
+  </div>
+
+  <div class="toolbar">
+    <button class="btn btn-primary" id="btnAll">⬇︎ Tải tất cả slide (PNG)</button>
+    <button class="btn btn-ghost" onclick="window.print()">🖨 In / Lưu PDF</button>
+    <button class="btn btn-ghost" id="btnCap">📋 Copy caption</button>
+  </div>
+  <div class="hint" id="loadHint"></div>
+
+  <div class="deck" id="deck">
+
+    <!-- ============ SLIDE 1 ============ -->
+    <div class="slide-wrap"><div class="slide-cap"><span>Slide <b>1/7</b> · Hook</span><span>4:5 · 1080×1350</span></div>
+      <div class="slide s1" data-name="slide-1-hook">
+        <div class="grid-lines"></div>
+        <div class="frame">
+          <div class="content">
+            <span class="pill">Word of the Week</span>
+            <div class="hookword">RUNWAY <span class="neq">≠</span><br>TAXIWAY</div>
+            <div class="sub">Đừng nhầm hai từ này trong tiếng Anh hàng không.<br>
+              <span class="en" style="font-size:32px">Don’t mix these up in Aviation English.</span></div>
+          </div>
+          <div class="brand"><div class="dot"></div><span>ORI<small>Aviation English made simple</small></span></div>
+          <div class="pageno">01<i> / 07</i></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ SLIDE 2 ============ -->
+    <div class="slide-wrap"><div class="slide-cap"><span>Slide <b>2/7</b> · Định nghĩa RUNWAY</span><span>4:5</span></div>
+      <div class="slide" data-name="slide-2-runway">
+        <div class="grid-lines"></div>
+        <div class="frame">
+          <div class="eyebrow"><span class="bar"></span>ĐỊNH NGHĨA NHANH</div>
+          <div class="content">
+            <div class="card run">
+              <div class="accent-strip"></div>
+              <div class="tag"><span class="ic">🛫</span>RUNWAY = ĐƯỜNG BĂNG</div>
+              <div class="def-vi" style="font-size:44px;color:#fff;font-weight:800;margin-top:0">Nơi máy bay cất cánh và hạ cánh.</div>
+              <div class="def-en" style="font-weight:500;color:var(--ink-soft);font-size:38px;margin-top:16px">The surface where aircraft take off and land.</div>
+            </div>
+            <div class="note"><span class="q">✎</span><div>Nói rõ ràng, chính xác rất quan trọng.<br><span class="en" style="font-size:24px">Clear &amp; precise wording matters.</span></div></div>
+          </div>
+          <div class="brand"><div class="dot"></div><span>ORI<small>Aviation English made simple</small></span></div>
+          <div class="pageno">02<i> / 07</i></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ SLIDE 3 ============ -->
+    <div class="slide-wrap"><div class="slide-cap"><span>Slide <b>3/7</b> · So sánh TAXIWAY</span><span>4:5</span></div>
+      <div class="slide" data-name="slide-3-taxiway">
+        <div class="grid-lines"></div>
+        <div class="frame">
+          <div class="eyebrow"><span class="bar"></span>ĐỂ TRÁNH NHẦM</div>
+          <div class="content">
+            <div class="card taxi">
+              <div class="accent-strip"></div>
+              <div class="tag"><span class="ic">🛬</span>TAXIWAY = ĐƯỜNG LĂN</div>
+              <div class="def-vi" style="font-size:42px;color:#fff;font-weight:800;margin-top:0">Đường nối sân đỗ / cổng ra máy bay với đường băng.</div>
+              <div class="def-en" style="font-weight:500;color:var(--ink-soft);font-size:36px;margin-top:16px">The path aircraft use to move between runway and gate/apron.</div>
+            </div>
+            <div class="note"><span class="q" style="color:var(--sky)">➜</span><div style="font-size:32px;color:#fff;font-weight:600">Taxiway để di chuyển — Runway để cất/hạ cánh.<br><span class="en" style="font-size:26px;font-weight:400">Taxiway is for moving, runway is for takeoff/landing.</span></div></div>
+          </div>
+          <div class="brand"><div class="dot"></div><span>ORI<small>Aviation English made simple</small></span></div>
+          <div class="pageno">03<i> / 07</i></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ SLIDE 4 ============ -->
+    <div class="slide-wrap"><div class="slide-cap"><span>Slide <b>4/7</b> · Mẹo nhớ nhanh</span><span>4:5</span></div>
+      <div class="slide" data-name="slide-4-memory">
+        <div class="grid-lines"></div>
+        <div class="frame">
+          <div class="eyebrow"><span class="bar"></span>DẤU HIỆU DỄ NHỚ</div>
+          <div class="content">
+            <div class="memrow">
+              <div class="mem run">
+                <div class="big"><u>RUN</u>way</div>
+                <span class="arrow">→</span>
+                <div class="desc"><div class="en2">RUN = takeoff / landing roll</div><div class="vi2">“chạy đà” để cất & hạ cánh</div></div>
+              </div>
+              <div class="mem taxi">
+                <div class="big"><u>TAXI</u>way</div>
+                <span class="arrow">→</span>
+                <div class="desc"><div class="en2">TAXI = moving slowly on the ground</div><div class="vi2">“lăn bánh” chậm trên mặt đất</div></div>
+              </div>
+            </div>
+            <div class="note" style="justify-content:center;text-align:center"><div style="font-size:30px;color:var(--orange-soft);font-weight:700">Cứ nhớ chữ đầu — bạn sẽ không bao giờ nhầm nữa! 🧠</div></div>
+          </div>
+          <div class="brand"><div class="dot"></div><span>ORI<small>Aviation English made simple</small></span></div>
+          <div class="pageno">04<i> / 07</i></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ SLIDE 5 ============ -->
+    <div class="slide-wrap"><div class="slide-cap"><span>Slide <b>5/7</b> · Ví dụ câu</span><span>4:5</span></div>
+      <div class="slide" data-name="slide-5-examples">
+        <div class="grid-lines"></div>
+        <div class="frame">
+          <div class="eyebrow"><span class="bar"></span>VÍ DỤ NGỮ CẢNH CHUẨN</div>
+          <div class="content">
+            <div class="ex">
+              <div class="num">1</div>
+              <div class="en3">“The aircraft is ready for takeoff on <span class="hl">runway</span> 25.”</div>
+              <div class="vi3">“Máy bay sẵn sàng cất cánh trên đường băng 25.”</div>
+            </div>
+            <div class="ex">
+              <div class="num">2</div>
+              <div class="en3">“We are <span class="hl-sky">taxiing</span> to the <span class="hl">runway</span>.”</div>
+              <div class="vi3">“Chúng tôi đang lăn ra đường băng.”</div>
+            </div>
+          </div>
+          <div class="brand"><div class="dot"></div><span>ORI<small>Aviation English made simple</small></span></div>
+          <div class="pageno">05<i> / 07</i></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ SLIDE 6 ============ -->
+    <div class="slide-wrap"><div class="slide-cap"><span>Slide <b>6/7</b> · Mini quiz</span><span>4:5</span></div>
+      <div class="slide" data-name="slide-6-quiz">
+        <div class="grid-lines"></div>
+        <div class="frame">
+          <div class="eyebrow"><span class="bar"></span>QUICK QUIZ · CÂU HỎI NHANH</div>
+          <div class="content">
+            <div class="quiz-q">Cái nào dùng để cất & hạ cánh?
+              <span class="en-q">Which one is used for takeoff and landing?</span>
+            </div>
+            <div class="opts">
+              <div class="opt"><span class="key">A</span>Taxiway</div>
+              <div class="opt"><span class="key">B</span>Runway</div>
+            </div>
+            <div class="quiz-hint">👉 Đáp án ở slide sau · Answer on next slide</div>
+          </div>
+          <div class="brand"><div class="dot"></div><span>ORI<small>Aviation English made simple</small></span></div>
+          <div class="pageno">06<i> / 07</i></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ SLIDE 7 ============ -->
+    <div class="slide-wrap"><div class="slide-cap"><span>Slide <b>7/7</b> · Đáp án + CTA</span><span>4:5</span></div>
+      <div class="slide" data-name="slide-7-answer-cta">
+        <div class="grid-lines"></div>
+        <div class="frame">
+          <div class="eyebrow"><span class="bar"></span>ĐÁP ÁN · ANSWER</div>
+          <div class="content">
+            <div class="answer">
+              <div class="badge"><span class="check">✓</span>B. RUNWAY</div>
+              <div class="reveal">Runway = đường băng để cất & hạ cánh.<br><span style="font-size:30px">Runway is where aircraft take off and land.</span></div>
+            </div>
+            <div class="cta">
+              <div class="save">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#3a1c05" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+                Lưu bài để ôn lại nhé!
+              </div>
+              <div class="en-cta">Save this post to review later.</div>
+            </div>
+          </div>
+          <div class="brand"><div class="dot"></div><span>ORI<small>Aviation English made simple</small></span></div>
+          <div class="pageno">07<i> / 07</i></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ============ CAPTION ============ -->
+  <div class="cap-section">
+    <h3>📝 Caption đăng bài (song ngữ · 1 CTA)</h3>
+    <div class="sub">Copy nguyên khối bên dưới để dán vào phần mô tả TikTok.</div>
+    <div class="cap-grid">
+      <div class="cap-card">
+        <h4>Caption <button class="copy" data-copy="capText">Copy</button></h4>
+        <pre id="capText">RUNWAY không chỉ là “đường băng” — mà còn là từ bạn sẽ gặp rất thường xuyên khi học tiếng Anh hàng không.
+Nhớ nhanh thế này: Taxiway = đường lăn (lăn bánh), còn Runway = đường băng (cất/hạ cánh).
+
+Runway vs. taxiway is one of the easiest mix-ups in Aviation English.
+Taxiway is for moving on the ground — runway is for takeoff and landing.
+
+📌 Lưu bài để ôn lại / Save this for your next review.</pre>
+      </div>
+      <div class="cap-card">
+        <h4>Hashtags <button class="copy" data-copy="tagText">Copy</button></h4>
+        <div class="tags" id="tagText">#AviationEnglish #ORIEnglish #Runway #Taxiway #EnglishForPilots #CabinCrewEnglish #LearnEnglishDaily #TiengAnhHangKhong</div>
+        <h4 style="margin-top:22px">Gợi ý đăng</h4>
+        <pre style="color:var(--ink-soft)">• Đăng dạng carousel ảnh (7 slide) theo đúng thứ tự 1→7.
+• Slide 1 làm ảnh bìa (thumbnail).
+• Ghim bình luận đầu tiên: “B nhé! 🛫”.
+• Trạng thái đăng đều tay: Thứ 2 hằng tuần.</pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    ORI – Aviation English made simple · Word of the Week #01 · RUNWAY<br>
+    Palette: Navy #0A1E3F · Sky #4FA9FF · Orange #FF8A3D · Tỉ lệ 4:5 (1080×1350)
+  </div>
+</div>
+
+<!-- html2canvas: dùng để xuất PNG. Nếu không tải được vẫn có thể In/Screenshot. -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+  // ===== SCALE slide 1080px về khung hiển thị =====
+  function fitSlides(){
+    document.querySelectorAll('.slide-wrap').forEach(w=>{
+      const slide=w.querySelector('.slide');
+      const avail=w.clientWidth;
+      const scale=avail/1080;
+      slide.style.transform='scale('+scale+')';
+      slide.parentElement.style.height=(1350*scale)+'px';
+      slide.parentElement.style.position='relative';
+    });
+  }
+  window.addEventListener('resize',fitSlides);
+  window.addEventListener('load',fitSlides);
+  fitSlides();
+
+  // ===== Copy tiện ích =====
+  function copyText(t){navigator.clipboard.writeText(t)}
+  document.querySelectorAll('.copy').forEach(b=>{
+    b.addEventListener('click',()=>{
+      const el=document.getElementById(b.dataset.copy);
+      copyText(el.innerText);
+      const o=b.textContent;b.textContent='✓ Đã copy';setTimeout(()=>b.textContent=o,1400);
+    });
+  });
+  document.getElementById('btnCap').addEventListener('click',()=>{
+    copyText(document.getElementById('capText').innerText+"\n\n"+document.getElementById('tagText').innerText);
+    const b=document.getElementById('btnCap');const o=b.textContent;b.textContent='✓ Đã copy caption';setTimeout(()=>b.textContent=o,1500);
+  });
+
+  // ===== Xuất PNG từng slide ở kích thước gốc 1080x1350 =====
+  const hint=document.getElementById('loadHint');
+  async function exportSlide(slideEl,filename){
+    const prev=slideEl.style.transform;
+    slideEl.style.transform='none';                 // render ở kích thước thật
+    const canvas=await html2canvas(slideEl,{scale:1,backgroundColor:null,width:1080,height:1350,useCORS:true});
+    slideEl.style.transform=prev;
+    const a=document.createElement('a');
+    a.href=canvas.toDataURL('image/png');
+    a.download=filename+'.png';a.click();
+  }
+  document.getElementById('btnAll').addEventListener('click',async()=>{
+    if(typeof html2canvas==='undefined'){
+      hint.textContent='⚠️ Không tải được thư viện xuất ảnh (mạng bị chặn). Hãy dùng nút “In / Lưu PDF” hoặc chụp màn hình từng slide.';
+      return;
+    }
+    const slides=[...document.querySelectorAll('.slide')];
+    for(let i=0;i<slides.length;i++){
+      hint.textContent='Đang xuất slide '+(i+1)+'/'+slides.length+'…';
+      await exportSlide(slides[i],slides[i].dataset.name);
+      await new Promise(r=>setTimeout(r,350));
+    }
+    hint.textContent='✅ Đã xuất '+slides.length+' ảnh. Kiểm tra thư mục Downloads rồi đăng carousel theo thứ tự 1→7.';
+    setTimeout(fitSlides,100);
+  });
+
+  // Thông báo nếu html2canvas không sẵn sàng
+  window.addEventListener('load',()=>{
+    if(typeof html2canvas==='undefined'){
+      hint.textContent='ℹ️ Chế độ xuất PNG cần internet. Không có mạng thì dùng “In / Lưu PDF” hoặc chụp màn hình vẫn đủ chất lượng.';
+    }
+  });
+</script>
+</body>
+</html>
