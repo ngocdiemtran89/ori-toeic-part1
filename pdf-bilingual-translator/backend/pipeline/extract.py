@@ -20,6 +20,26 @@ from .models import Block
 # bị ngắt giữa chừng -> ghép tiếp với dòng/đoạn sau.
 _SENT_END = ('.', '!', '?', ':', ';', '"', '”', "'", ")", "]")
 
+# Chỉ là số trang (vd "12", "- 12 -", "Page 12")
+_PAGE_NUM_RE = re.compile(r"^\W*(?:page\s*)?\d{1,4}\W*$", re.IGNORECASE)
+
+
+def _is_noise(text: str) -> bool:
+    """Nhận diện rác thường gặp khi OCR: số trang, ký tự lạc, dòng quá ngắn."""
+    t = text.strip()
+    if not t:
+        return True
+    if _PAGE_NUM_RE.match(t):
+        return True
+    # Dòng rất ngắn mà không phải chữ có nghĩa (vd '~', 'ﬁ', '|')
+    if len(t) <= 2 and not t.isalpha():
+        return True
+    # Hầu như không có chữ cái (toàn ký hiệu/nhiễu)
+    letters = sum(c.isalpha() for c in t)
+    if letters == 0:
+        return True
+    return False
+
 
 def _median(values: List[float]) -> float:
     if not values:
@@ -111,6 +131,8 @@ def extract_blocks(pdf_path: str) -> List[Block]:
         # Trang scan: quá ít text -> OCR rồi reflow thành đoạn
         if len(raw_text) < OCR_TEXT_THRESHOLD:
             for para in _reflow_paragraphs(_ocr_page(page)):
+                if _is_noise(para):
+                    continue
                 blocks.append(Block(kind="paragraph", text=para))
             continue
 
@@ -137,6 +159,8 @@ def extract_blocks(pdf_path: str) -> List[Block]:
                 continue
             avg_size = sum(sizes) / len(sizes) if sizes else median_size
             is_heading = avg_size >= heading_cut and len(block_text) < 120
+            if not is_heading and _is_noise(block_text):
+                continue  # bỏ số trang / header-footer / rác
             blocks.append(
                 Block(kind="heading" if is_heading else "paragraph", text=block_text)
             )
