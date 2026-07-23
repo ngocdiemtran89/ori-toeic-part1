@@ -27,6 +27,17 @@ CLAUDE_BATCH_SENTENCES = int(os.environ.get("PBT_CLAUDE_BATCH", "40"))
 # Giới hạn ký tự mỗi lần gọi Google Translate (deep-translator giới hạn ~5000)
 GOOGLE_BATCH_CHARS = 4500
 
+# Số lô dịch chạy song song (Google ít hơn để tránh bị chặn IP)
+CLAUDE_WORKERS = int(os.environ.get("PBT_CLAUDE_WORKERS", "5"))
+GOOGLE_WORKERS = int(os.environ.get("PBT_GOOGLE_WORKERS", "3"))
+
+# Số lần thử lại + backoff (giây) khi lô dịch lỗi (mạng/tạm thời)
+MAX_RETRIES = int(os.environ.get("PBT_MAX_RETRIES", "4"))
+RETRY_BASE_DELAY = float(os.environ.get("PBT_RETRY_DELAY", "2"))
+
+# Số ký tự văn bản mẫu dùng để trích bảng thuật ngữ (glossary) cho Claude
+GLOSSARY_SAMPLE_CHARS = int(os.environ.get("PBT_GLOSSARY_CHARS", "6000"))
+
 
 def ensure_dirs() -> None:
     UPLOAD_DIR.mkdir(parents=True, exist_ok=True)

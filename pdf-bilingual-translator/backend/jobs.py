@@ -55,15 +55,6 @@ def _run(job: Job) -> None:
         if total == 0:
             raise RuntimeError("Không trích được văn bản nào từ PDF.")
 
-        # Gom toàn bộ câu (giữ ánh xạ vị trí để trả lại đúng block)
-        flat: list[str] = []
-        index: list[tuple[int, int]] = []  # (block_i, sentence_i)
-        for bi, b in enumerate(blocks):
-            for si, s in enumerate(b.sentences):
-                flat.append(s)
-                index.append((bi, si))
-            b.translations = [""] * len(b.sentences)
-
         job.status = "translating"
         job.message = f"Đang dịch {total} câu bằng engine '{job.engine}'…"
 
@@ -72,10 +63,7 @@ def _run(job: Job) -> None:
             job.message = f"Đang dịch… {done}/{tot} câu"
 
         engine = get_engine(job.engine)
-        translations = engine.translate_all(flat, progress=on_progress)
-
-        for (bi, si), vi in zip(index, translations):
-            blocks[bi].translations[si] = vi
+        engine.translate_blocks(blocks, progress=on_progress)
 
         job.status = "rendering"
         job.message = "Đang tạo file Word…"

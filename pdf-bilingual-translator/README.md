@@ -49,6 +49,19 @@ export PBT_ENGINE=claude
 | `PBT_MAX_UPLOAD_MB` | `50` | Giới hạn dung lượng upload |
 | `PBT_OCR_THRESHOLD` | `40` | Số ký tự tối thiểu/trang; dưới ngưỡng → OCR |
 | `PBT_DATA_DIR` | `./data` | Nơi lưu file tạm |
+| `PBT_CLAUDE_WORKERS` | `5` | Số lô Claude chạy song song |
+| `PBT_GOOGLE_WORKERS` | `3` | Số lô Google chạy song song (thấp để tránh chặn IP) |
+| `PBT_MAX_RETRIES` | `4` | Số lần thử lại khi lô dịch lỗi |
+| `PBT_GLOSSARY_CHARS` | `6000` | Lượng text mẫu để rút glossary (Claude) |
+
+## Tối ưu chất lượng & tốc độ
+
+- **Dịch theo ngữ cảnh:** gửi cả cụm đoạn để model hiểu mạch văn, nhưng trả về
+  theo từng câu → vừa mượt vừa giữ ánh xạ 1-1.
+- **Glossary nhất quán (Claude):** quét mẫu đầu sách rút thuật ngữ chính, nhồi vào
+  system prompt (có prompt caching) để dịch thống nhất xuyên suốt.
+- **Song song:** các lô dịch chạy đồng thời → nhanh nhiều lần với sách dày.
+- **Retry + backoff:** mỗi lô tự thử lại khi lỗi mạng/tạm thời, job không chết giữa chừng.
 
 ## Chi phí ước tính (Claude API)
 
