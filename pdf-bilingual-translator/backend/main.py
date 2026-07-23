@@ -10,6 +10,7 @@ from fastapi.staticfiles import StaticFiles
 from . import jobs
 from .config import (
     DEFAULT_ENGINE,
+    DEFAULT_LAYOUT,
     MAX_UPLOAD_MB,
     UPLOAD_DIR,
     ensure_dirs,
@@ -23,15 +24,21 @@ FRONTEND_DIR = Path(__file__).resolve().parent.parent / "frontend"
 
 
 @app.post("/api/upload")
-async def upload(file: UploadFile = File(...), engine: str = Form(DEFAULT_ENGINE)):
+async def upload(
+    file: UploadFile = File(...),
+    engine: str = Form(DEFAULT_ENGINE),
+    layout: str = Form(DEFAULT_LAYOUT),
+):
     if not file.filename or not file.filename.lower().endswith(".pdf"):
         raise HTTPException(400, "Vui lòng tải lên file .pdf")
+    if layout not in ("sentence", "paragraph"):
+        layout = DEFAULT_LAYOUT
 
     data = await file.read()
     if len(data) > MAX_UPLOAD_MB * 1024 * 1024:
         raise HTTPException(400, f"File vượt quá {MAX_UPLOAD_MB}MB")
 
-    job = jobs.create_job(file.filename, "", engine)
+    job = jobs.create_job(file.filename, "", engine, layout)
     pdf_path = UPLOAD_DIR / f"{job.id}.pdf"
     pdf_path.write_bytes(data)
     job.pdf_path = str(pdf_path)

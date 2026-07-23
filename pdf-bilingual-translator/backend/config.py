@@ -12,6 +12,10 @@ OUTPUT_DIR = DATA_DIR / "outputs"
 # Engine dịch mặc định: "google" (free) hoặc "claude"
 DEFAULT_ENGINE = os.environ.get("PBT_ENGINE", "google")
 
+# Kiểu trình bày Word: "sentence" (1 câu Anh / 1 câu Việt) hoặc
+# "paragraph" (cả đoạn Anh rồi cả đoạn Việt)
+DEFAULT_LAYOUT = os.environ.get("PBT_LAYOUT", "sentence")
+
 # Model dùng khi engine = claude
 CLAUDE_MODEL = os.environ.get("PBT_CLAUDE_MODEL", "claude-sonnet-5")
 

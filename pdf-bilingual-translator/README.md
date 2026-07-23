@@ -45,6 +45,7 @@ export PBT_ENGINE=claude
 | Biến | Mặc định | Ý nghĩa |
 |---|---|---|
 | `PBT_ENGINE` | `google` | Bộ dịch mặc định (`google` / `claude`) |
+| `PBT_LAYOUT` | `sentence` | Trình bày (`sentence` = 1 câu Anh/1 câu Việt, `paragraph` = cả đoạn) |
 | `PBT_CLAUDE_MODEL` | `claude-sonnet-5` | Model Claude khi dùng engine claude |
 | `PBT_MAX_UPLOAD_MB` | `50` | Giới hạn dung lượng upload |
 | `PBT_OCR_THRESHOLD` | `40` | Số ký tự tối thiểu/trang; dưới ngưỡng → OCR |
@@ -62,6 +63,9 @@ export PBT_ENGINE=claude
   system prompt (có prompt caching) để dịch thống nhất xuyên suốt.
 - **Song song:** các lô dịch chạy đồng thời → nhanh nhiều lần với sách dày.
 - **Retry + backoff:** mỗi lô tự thử lại khi lỗi mạng/tạm thời, job không chết giữa chừng.
+- **Khử trùng lặp:** câu trùng y hệt chỉ dịch một lần, còn lại lấy từ cache → tiết kiệm tiền/thời gian.
+- **Đúng thứ tự đọc:** dùng `sort=True` của PyMuPDF → xử lý đúng PDF nhiều cột.
+- **Hai kiểu trình bày:** từng câu (1 Anh/1 Việt) hoặc từng đoạn (cả đoạn Anh rồi cả đoạn Việt).
 
 ## Chi phí ước tính (Claude API)
 

@@ -66,7 +66,8 @@ def extract_blocks(pdf_path: str) -> List[Block]:
                 blocks.append(Block(kind="paragraph", text=para))
             continue
 
-        data = page.get_text("dict")
+        # sort=True: sắp xếp khối theo đúng thứ tự đọc (quan trọng cho PDF nhiều cột)
+        data = page.get_text("dict", sort=True)
         for blk in data.get("blocks", []):
             lines = blk.get("lines", [])
             if not lines:

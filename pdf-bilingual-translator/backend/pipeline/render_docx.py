@@ -82,8 +82,30 @@ def _add_toc(doc: Document, blocks: List[Block]) -> None:
     doc.add_page_break()
 
 
-def _add_bilingual_paragraph(doc: Document, block: Block) -> None:
-    """Xen kẽ 1 câu Anh / 1 câu Việt cho một đoạn văn."""
+def _add_bilingual_paragraph(doc: Document, block: Block, layout: str) -> None:
+    """Trình bày song ngữ cho một đoạn văn.
+
+    layout="sentence": xen kẽ 1 câu Anh / 1 câu Việt.
+    layout="paragraph": cả đoạn Anh rồi cả đoạn Việt.
+    """
+    if layout == "paragraph":
+        en = " ".join(block.sentences)
+        vi = " ".join(t for t in block.translations if t)
+
+        p_en = doc.add_paragraph()
+        p_en.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        p_en.paragraph_format.space_after = Pt(2)
+        p_en.add_run(en).font.size = EN_SIZE
+
+        p_vi = doc.add_paragraph()
+        p_vi.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        p_vi.paragraph_format.space_after = Pt(10)
+        r_vi = p_vi.add_run(vi)
+        r_vi.italic = True
+        r_vi.font.size = VI_SIZE
+        r_vi.font.color.rgb = VI_COLOR
+        return
+
     for i in range(len(block.sentences)):
         en = block.sentences[i]
         vi = block.translations[i] if i < len(block.translations) else ""
@@ -117,7 +139,12 @@ def _add_bilingual_heading(doc: Document, block: Block) -> None:
         r_vi.font.color.rgb = VI_COLOR
 
 
-def render_docx(blocks: List[Block], output_path: str, title: str = "Tài liệu") -> str:
+def render_docx(
+    blocks: List[Block],
+    output_path: str,
+    title: str = "Tài liệu",
+    layout: str = "sentence",
+) -> str:
     doc = Document()
     _setup_styles(doc)
 
@@ -135,7 +162,7 @@ def render_docx(blocks: List[Block], output_path: str, title: str = "Tài liệu
         if block.kind == "heading":
             _add_bilingual_heading(doc, block)
         else:
-            _add_bilingual_paragraph(doc, block)
+            _add_bilingual_paragraph(doc, block, layout)
 
     doc.save(output_path)
     return output_path

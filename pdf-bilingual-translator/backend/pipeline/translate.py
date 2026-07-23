@@ -1,21 +1,23 @@
-"""Dịch khối văn bản Anh -> Việt (tối ưu chất lượng, tốc độ, độ bền).
+"""Dịch khối văn bản Anh -> Việt (tối ưu chất lượng, tốc độ, chi phí, độ bền).
 
-Bốn tối ưu:
-- (a) Dịch theo NGỮ CẢNH: gửi cả cụm câu/đoạn để model hiểu mạch văn, nhưng vẫn
-  trả về theo từng câu để giữ ánh xạ 1-1.
-- (b) GLOSSARY: rút bảng thuật ngữ chính (Claude) rồi nhồi vào system prompt để
-  dịch nhất quán xuyên suốt sách.
-- (d) SONG SONG: các lô dịch chạy đồng thời bằng thread pool.
-- (f) RETRY: mỗi lô có thử lại + backoff khi lỗi mạng/tạm thời.
+Tối ưu:
+- (a) Dịch theo NGỮ CẢNH: mỗi đoạn là một "group" câu, dịch cùng nhau để hiểu
+  mạch văn, nhưng trả về theo từng câu (giữ ánh xạ 1-1).
+- (b) GLOSSARY: rút bảng thuật ngữ (Claude) rồi nhồi vào system prompt để nhất quán.
+- (d) SONG SONG: các lô chạy đồng thời qua thread pool.
+- (e) KHỬ TRÙNG: câu trùng lặp y hệt chỉ dịch một lần, còn lại lấy từ cache.
+- (f) RETRY: mỗi lô tự thử lại + backoff khi lỗi.
 
-Cả hai engine đều điền `block.translations` (cùng độ dài `block.sentences`).
+Engine chỉ cần cài `translate_groups(groups)`; hàm `translate_document` lo khử
+trùng, gọi engine, rồi gán kết quả về `block.translations`.
 """
 from __future__ import annotations
 
 import re
 import time
+from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from typing import Callable, List, Optional, Protocol
+from typing import Callable, Dict, List, Optional, Protocol, Tuple
 
 from ..config import (
     CLAUDE_BATCH_SENTENCES,
@@ -30,15 +32,16 @@ from ..config import (
 from .models import Block
 
 ProgressCb = Optional[Callable[[int, int], None]]  # (đã dịch, tổng)
+Groups = List[List[str]]  # danh sách nhóm-ngữ-cảnh; mỗi nhóm là list câu
 
 
 class Engine(Protocol):
-    def translate_blocks(self, blocks: List[Block], progress: ProgressCb = None) -> None:
+    def translate_groups(self, groups: Groups, progress: ProgressCb = None) -> Groups:
         ...
 
 
 # --------------------------------------------------------------------------- #
-# Tiện ích dùng chung: retry + backoff, chạy lô song song
+# Tiện ích: retry + backoff, chạy song song
 # --------------------------------------------------------------------------- #
 def _retry(fn: Callable, *args):
     delay = RETRY_BASE_DELAY
@@ -52,20 +55,12 @@ def _retry(fn: Callable, *args):
             delay *= 2
 
 
-def _parallel(
-    payloads: list,
-    counts: List[int],
-    worker: Callable,
-    workers: int,
-    progress: ProgressCb,
-    total: int,
-) -> list:
-    """Chạy `worker(payload)` cho từng payload song song, giữ đúng thứ tự kết quả.
-
-    `counts[i]` = số câu của payload i, dùng để cập nhật tiến độ.
-    """
+def _parallel(payloads: list, counts: List[int], worker: Callable,
+              workers: int, progress: ProgressCb, total: int) -> list:
     results: list = [None] * len(payloads)
     done = 0
+    if not payloads:
+        return results
     with ThreadPoolExecutor(max_workers=max(1, workers)) as ex:
         fut_to_i = {ex.submit(_retry, worker, p): i for i, p in enumerate(payloads)}
         for fut in as_completed(fut_to_i):
@@ -78,16 +73,12 @@ def _parallel(
 
 
 # --------------------------------------------------------------------------- #
-# Google Translate (miễn phí, không cần API key)
+# Google Translate (miễn phí)
 # --------------------------------------------------------------------------- #
 class GoogleEngine:
-    """deep-translator. Gộp câu theo lô ký tự (đã cho cả đoạn nên có ngữ cảnh),
-    chạy song song, có retry. Google không dùng glossary."""
-
     SEP = "\n@@@\n"
 
     def _translate_chunk(self, sentences: List[str]) -> List[str]:
-        # Tạo translator mới mỗi lô để an toàn khi chạy đa luồng
         from deep_translator import GoogleTranslator
 
         translator = GoogleTranslator(source="en", target="vi")
@@ -96,20 +87,18 @@ class GoogleEngine:
         parts = [p.strip() for p in re.split(r"@@@", translated)]
         parts = [p for p in parts if p != ""]
         if len(parts) != len(sentences):
-            # Google làm hỏng separator -> dịch từng câu để giữ đúng số lượng
             return [translator.translate(s) or "" for s in sentences]
         return parts
 
-    def translate_blocks(self, blocks: List[Block], progress: ProgressCb = None) -> None:
+    def translate_groups(self, groups: Groups, progress: ProgressCb = None) -> Groups:
+        if not groups:
+            return []
         flat: List[str] = []
-        index: List[tuple[int, int]] = []
-        for bi, b in enumerate(blocks):
-            b.translations = [""] * len(b.sentences)
-            for si, s in enumerate(b.sentences):
-                flat.append(s)
-                index.append((bi, si))
+        boundaries: List[int] = []
+        for g in groups:
+            boundaries.append(len(g))
+            flat.extend(g)
 
-        # Chia lô theo số ký tự
         payloads: List[List[str]] = []
         cur: List[str] = []
         chars = 0
@@ -124,19 +113,22 @@ class GoogleEngine:
             payloads.append(cur)
 
         counts = [len(p) for p in payloads]
-        results = _parallel(
-            payloads, counts, self._translate_chunk, GOOGLE_WORKERS, progress, len(flat)
-        )
-
+        results = _parallel(payloads, counts, self._translate_chunk,
+                            GOOGLE_WORKERS, progress, len(flat))
         flat_tr: List[str] = []
         for r in results:
             flat_tr.extend(r)
-        for (bi, si), vi in zip(index, flat_tr):
-            blocks[bi].translations[si] = vi
+
+        out: Groups = []
+        pos = 0
+        for ln in boundaries:
+            out.append(flat_tr[pos : pos + ln])
+            pos += ln
+        return out
 
 
 # --------------------------------------------------------------------------- #
-# Claude API (chất lượng cao): ngữ cảnh + glossary + song song + retry
+# Claude API (ngữ cảnh + glossary + song song + retry)
 # --------------------------------------------------------------------------- #
 class ClaudeEngine:
     BASE_SYSTEM = (
@@ -159,18 +151,16 @@ class ClaudeEngine:
         self._model = model
         self._glossary = ""
 
-    # -- (b) Glossary ------------------------------------------------------- #
-    def _build_glossary(self, blocks: List[Block]) -> str:
-        sample_parts: List[str] = []
+    def _build_glossary(self, groups: Groups) -> str:
+        parts: List[str] = []
         chars = 0
-        for b in blocks:
-            if b.kind != "paragraph":
-                continue
-            sample_parts.append(b.text)
-            chars += len(b.text)
+        for g in groups:
+            text = " ".join(g)
+            parts.append(text)
+            chars += len(text)
             if chars >= GLOSSARY_SAMPLE_CHARS:
                 break
-        sample = "\n".join(sample_parts)[:GLOSSARY_SAMPLE_CHARS]
+        sample = "\n".join(parts)[:GLOSSARY_SAMPLE_CHARS]
         if not sample.strip():
             return ""
 
@@ -191,7 +181,7 @@ class ClaudeEngine:
         try:
             return _retry(_call) or ""
         except Exception:  # noqa: BLE001
-            return ""  # glossary chỉ là bonus; lỗi thì bỏ qua
+            return ""
 
     def _system_prompt(self) -> list:
         text = self.BASE_SYSTEM
@@ -200,21 +190,7 @@ class ClaudeEngine:
                 "\n\nBẢNG THUẬT NGỮ BẮT BUỘC DÙNG NHẤT QUÁN "
                 "(English = Tiếng Việt):\n" + self._glossary
             )
-        # cache_control: glossary + hướng dẫn ổn định -> cache để rẻ & nhất quán
         return [{"type": "text", "text": text, "cache_control": {"type": "ephemeral"}}]
-
-    # -- (a) Dịch theo ngữ cảnh + trả về theo câu ---------------------------- #
-    @staticmethod
-    def _render_batch(blocks: List[Block]) -> tuple[str, int]:
-        lines: List[str] = []
-        n = 0
-        for bi, b in enumerate(blocks):
-            if bi > 0:
-                lines.append("")  # dòng trống = ranh giới đoạn (ngữ cảnh)
-            for s in b.sentences:
-                n += 1
-                lines.append(f"{n}. {s}")
-        return "\n".join(lines), n
 
     @staticmethod
     def _parse_numbered(text: str, expected: int) -> List[str]:
@@ -228,8 +204,19 @@ class ClaudeEngine:
                 result[idx] = m.group(2).strip()
         return result
 
-    def _translate_batch(self, blocks: List[Block]) -> List[str]:
-        body, n = self._render_batch(blocks)
+    def _translate_batch(self, batch: Groups) -> Groups:
+        lines: List[str] = []
+        n = 0
+        counts: List[int] = []
+        for gi, g in enumerate(batch):
+            if gi > 0:
+                lines.append("")  # ranh giới đoạn -> ngữ cảnh
+            for s in g:
+                n += 1
+                lines.append(f"{n}. {s}")
+            counts.append(len(g))
+        body = "\n".join(lines)
+
         resp = self._client.messages.create(
             model=self._model,
             max_tokens=8000,
@@ -237,40 +224,42 @@ class ClaudeEngine:
             messages=[{"role": "user", "content": body}],
         )
         text = "".join(b.text for b in resp.content if b.type == "text")
-        return self._parse_numbered(text, n)
+        flat = self._parse_numbered(text, n)
 
-    def translate_blocks(self, blocks: List[Block], progress: ProgressCb = None) -> None:
-        for b in blocks:
-            b.translations = [""] * len(b.sentences)
+        out: Groups = []
+        pos = 0
+        for c in counts:
+            out.append(flat[pos : pos + c])
+            pos += c
+        return out
 
-        self._glossary = self._build_glossary(blocks)
+    def translate_groups(self, groups: Groups, progress: ProgressCb = None) -> Groups:
+        if not groups:
+            return []
+        self._glossary = self._build_glossary(groups)
 
-        # Chia lô theo số câu (gom các block liền kề -> giữ ngữ cảnh đoạn)
-        payloads: List[List[Block]] = []
-        cur: List[Block] = []
+        batches: List[Groups] = []
+        cur: Groups = []
         cnt = 0
-        for b in blocks:
-            k = len(b.sentences)
+        for g in groups:
+            k = len(g)
             if cur and cnt + k > CLAUDE_BATCH_SENTENCES:
-                payloads.append(cur)
+                batches.append(cur)
                 cur = []
                 cnt = 0
-            cur.append(b)
+            cur.append(g)
             cnt += k
         if cur:
-            payloads.append(cur)
+            batches.append(cur)
 
-        counts = [sum(len(b.sentences) for b in p) for p in payloads]
+        counts = [sum(len(g) for g in b) for b in batches]
         total = sum(counts)
-        results = _parallel(
-            payloads, counts, self._translate_batch, CLAUDE_WORKERS, progress, total
-        )
-
-        for batch, res in zip(payloads, results):
-            pos = 0
-            for b in batch:
-                b.translations = res[pos : pos + len(b.sentences)]
-                pos += len(b.sentences)
+        results = _parallel(batches, counts, self._translate_batch,
+                            CLAUDE_WORKERS, progress, total)
+        out: Groups = []
+        for r in results:
+            out.extend(r)
+        return out
 
 
 def get_engine(name: str) -> Engine:
@@ -280,3 +269,47 @@ def get_engine(name: str) -> Engine:
     if name == "google":
         return GoogleEngine()
     raise ValueError(f"Engine không hỗ trợ: {name!r} (chọn 'google' hoặc 'claude')")
+
+
+# --------------------------------------------------------------------------- #
+# Orchestrator: khử trùng (e) + gọi engine + gán về block
+# --------------------------------------------------------------------------- #
+def translate_document(blocks: List[Block], engine: Engine, progress: ProgressCb = None) -> None:
+    """Dịch toàn tài liệu. Mỗi block là một nhóm-ngữ-cảnh; câu trùng y hệt
+    (sau chuẩn hoá khoảng trắng) chỉ dịch một lần."""
+    for b in blocks:
+        b.translations = [""] * len(b.sentences)
+
+    seen: Dict[str, Tuple[int, int]] = {}
+    dups: Dict[str, List[Tuple[int, int]]] = defaultdict(list)
+    group_texts: Groups = []
+    group_positions: List[List[Tuple[int, int]]] = []
+
+    for bi, b in enumerate(blocks):
+        texts: List[str] = []
+        positions: List[Tuple[int, int]] = []
+        for si, s in enumerate(b.sentences):
+            key = " ".join(s.split())
+            if key in seen:
+                dups[key].append((bi, si))
+            else:
+                seen[key] = (bi, si)
+                texts.append(s)
+                positions.append((bi, si))
+        if texts:  # bỏ qua block toàn câu trùng
+            group_texts.append(texts)
+            group_positions.append(positions)
+
+    results = engine.translate_groups(group_texts, progress=progress)
+
+    cache: Dict[str, str] = {}
+    for texts, positions, tr in zip(group_texts, group_positions, results):
+        for s, (bi, si), vi in zip(texts, positions, tr):
+            blocks[bi].translations[si] = vi
+            cache[" ".join(s.split())] = vi
+
+    # Điền các câu trùng từ cache (không tốn thêm lần dịch nào)
+    for key, plist in dups.items():
+        vi = cache.get(key, "")
+        for bi, si in plist:
+            blocks[bi].translations[si] = vi

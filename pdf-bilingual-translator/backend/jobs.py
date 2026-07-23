@@ -12,7 +12,7 @@ from .config import OUTPUT_DIR
 from .pipeline.extract import extract_blocks
 from .pipeline.render_docx import render_docx
 from .pipeline.segment import count_sentences, segment_blocks
-from .pipeline.translate import get_engine
+from .pipeline.translate import get_engine, translate_document
 
 
 @dataclass
@@ -21,6 +21,7 @@ class Job:
     filename: str
     pdf_path: str
     engine: str
+    layout: str = "sentence"
     status: str = "queued"  # queued | extracting | translating | rendering | done | error
     progress: float = 0.0    # 0..1
     message: str = "Đang chờ xử lý…"
@@ -32,8 +33,14 @@ _jobs: Dict[str, Job] = {}
 _lock = threading.Lock()
 
 
-def create_job(filename: str, pdf_path: str, engine: str) -> Job:
-    job = Job(id=uuid.uuid4().hex, filename=filename, pdf_path=pdf_path, engine=engine)
+def create_job(filename: str, pdf_path: str, engine: str, layout: str = "sentence") -> Job:
+    job = Job(
+        id=uuid.uuid4().hex,
+        filename=filename,
+        pdf_path=pdf_path,
+        engine=engine,
+        layout=layout,
+    )
     with _lock:
         _jobs[job.id] = job
     return job
@@ -63,14 +70,14 @@ def _run(job: Job) -> None:
             job.message = f"Đang dịch… {done}/{tot} câu"
 
         engine = get_engine(job.engine)
-        engine.translate_blocks(blocks, progress=on_progress)
+        translate_document(blocks, engine, progress=on_progress)
 
         job.status = "rendering"
         job.message = "Đang tạo file Word…"
         job.progress = 0.92
         title = Path(job.filename).stem
         out_path = str(OUTPUT_DIR / f"{job.id}.docx")
-        render_docx(blocks, out_path, title=title)
+        render_docx(blocks, out_path, title=title, layout=job.layout)
 
         job.output_path = out_path
         job.status = "done"
