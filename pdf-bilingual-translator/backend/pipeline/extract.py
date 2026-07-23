@@ -1,13 +1,24 @@
-"""Trích xuất văn bản + cấu trúc từ PDF, tự động OCR khi gặp trang scan."""
+"""Trích xuất văn bản + cấu trúc từ PDF, tự động OCR khi gặp trang scan.
+
+Điểm mấu chốt: PDF/OCR trả về văn bản NGẮT DÒNG theo chiều rộng trang. Nếu coi
+mỗi dòng là một câu thì file Word sẽ "xuống dòng lung tung". Vì vậy ta REFLOW:
+ghép các dòng bị ngắt lại thành đoạn hoàn chỉnh, nối từ bị gạch nối cuối dòng, và
+gộp các đoạn bị chia nhỏ trước khi tách câu.
+"""
 from __future__ import annotations
 
 import io
+import re
 from typing import List
 
 import fitz  # PyMuPDF
 
 from ..config import OCR_TEXT_THRESHOLD
 from .models import Block
+
+# Ký tự kết thúc câu/đoạn: nếu dòng trước KHÔNG kết bằng các ký tự này thì coi là
+# bị ngắt giữa chừng -> ghép tiếp với dòng/đoạn sau.
+_SENT_END = ('.', '!', '?', ':', ';', '"', '”', "'", ")", "]")
 
 
 def _median(values: List[float]) -> float:
@@ -19,8 +30,52 @@ def _median(values: List[float]) -> float:
     return s[mid] if n % 2 else (s[mid - 1] + s[mid]) / 2
 
 
+def _reflow(lines: List[str]) -> str:
+    """Ghép nhiều dòng thành MỘT đoạn: nối từ bị gạch nối cuối dòng, còn lại nối
+    bằng khoảng trắng."""
+    out = ""
+    for ln in lines:
+        ln = ln.strip()
+        if not ln:
+            continue
+        if not out:
+            out = ln
+        elif out.endswith("-"):
+            out = out[:-1] + ln  # information bị tách: infor- + mation
+        else:
+            out = out + " " + ln
+    return " ".join(out.split())
+
+
+def _reflow_paragraphs(text: str) -> List[str]:
+    """Tách text (OCR) theo dòng trống thành từng đoạn, mỗi đoạn được reflow."""
+    paras: List[str] = []
+    for chunk in re.split(r"\n\s*\n", text):
+        p = _reflow(chunk.splitlines())
+        if p:
+            paras.append(p)
+    return paras
+
+
+def _merge_paragraphs(blocks: List[Block]) -> List[Block]:
+    """Gộp các đoạn bị chia nhỏ: nếu đoạn trước không kết thúc bằng dấu câu thì
+    nối tiếp với đoạn sau (chỉ áp dụng cho paragraph, không đụng heading)."""
+    merged: List[Block] = []
+    for b in blocks:
+        if (
+            b.kind == "paragraph"
+            and merged
+            and merged[-1].kind == "paragraph"
+            and not merged[-1].text.rstrip().endswith(_SENT_END)
+        ):
+            prev = merged[-1]
+            prev.text = _reflow([prev.text, b.text])
+        else:
+            merged.append(b)
+    return merged
+
+
 def _ocr_page(page: "fitz.Page") -> str:
-    """OCR một trang scan bằng Tesseract (chỉ gọi khi trang gần như không có text)."""
     try:
         import pytesseract
         from PIL import Image
@@ -29,22 +84,16 @@ def _ocr_page(page: "fitz.Page") -> str:
             "Trang này là ảnh scan, cần cài pytesseract + Pillow + tesseract-ocr để OCR."
         ) from exc
 
-    # Render trang ở độ phân giải cao (~200 DPI) để OCR chính xác hơn
     pix = page.get_pixmap(matrix=fitz.Matrix(2.0, 2.0))
     img = Image.open(io.BytesIO(pix.tobytes("png")))
     return pytesseract.image_to_string(img, lang="eng")
 
 
 def extract_blocks(pdf_path: str) -> List[Block]:
-    """Đọc PDF -> danh sách Block (heading/paragraph) theo thứ tự đọc.
-
-    Nhận diện heading dựa trên cỡ chữ lớn hơn median rõ rệt.
-    Trang không có text (scan) sẽ được OCR và coi toàn bộ là paragraph.
-    """
     doc = fitz.open(pdf_path)
     blocks: List[Block] = []
 
-    # Ước lượng cỡ chữ median toàn tài liệu để so sánh heading
+    # Ước lượng cỡ chữ median để nhận diện heading
     all_sizes: List[float] = []
     for page in doc:
         data = page.get_text("dict")
@@ -54,34 +103,36 @@ def extract_blocks(pdf_path: str) -> List[Block]:
                     if span.get("text", "").strip():
                         all_sizes.append(span["size"])
     median_size = _median(all_sizes) or 12.0
-    heading_cut = median_size * 1.25  # lớn hơn 25% coi là heading
+    heading_cut = median_size * 1.25
 
     for page in doc:
         raw_text = page.get_text("text").strip()
 
-        # Trang scan: quá ít text -> OCR
+        # Trang scan: quá ít text -> OCR rồi reflow thành đoạn
         if len(raw_text) < OCR_TEXT_THRESHOLD:
-            ocr_text = _ocr_page(page).strip()
-            for para in _split_paragraphs(ocr_text):
+            for para in _reflow_paragraphs(_ocr_page(page)):
                 blocks.append(Block(kind="paragraph", text=para))
             continue
 
-        # sort=True: sắp xếp khối theo đúng thứ tự đọc (quan trọng cho PDF nhiều cột)
+        # sort=True: đúng thứ tự đọc (quan trọng cho PDF nhiều cột)
         data = page.get_text("dict", sort=True)
         for blk in data.get("blocks", []):
-            lines = blk.get("lines", [])
-            if not lines:
-                continue
-            texts: List[str] = []
+            line_texts: List[str] = []
             sizes: List[float] = []
-            for line in lines:
+            for line in blk.get("lines", []):
+                parts: List[str] = []
                 for span in line.get("spans", []):
                     t = span.get("text", "")
+                    parts.append(t)
                     if t.strip():
-                        texts.append(t)
                         sizes.append(span["size"])
-            block_text = " ".join(texts).strip()
-            block_text = " ".join(block_text.split())  # gộp khoảng trắng thừa
+                line_str = "".join(parts).strip()
+                if line_str:
+                    line_texts.append(line_str)
+            if not line_texts:
+                continue
+
+            block_text = _reflow(line_texts)  # ghép dòng trong khối thành đoạn
             if not block_text:
                 continue
             avg_size = sum(sizes) / len(sizes) if sizes else median_size
@@ -91,14 +142,4 @@ def extract_blocks(pdf_path: str) -> List[Block]:
             )
 
     doc.close()
-    return blocks
-
-
-def _split_paragraphs(text: str) -> List[str]:
-    """Tách text OCR thành các đoạn theo dòng trống."""
-    paras: List[str] = []
-    for chunk in text.split("\n\n"):
-        cleaned = " ".join(chunk.split())
-        if cleaned:
-            paras.append(cleaned)
-    return paras
+    return _merge_paragraphs(blocks)
