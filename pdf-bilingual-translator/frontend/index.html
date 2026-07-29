@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Dịch PDF song ngữ Anh – Việt</title>
+<style>
+  :root { --brand:#2b6cb0; --brand-dark:#1f4e82; --bg:#f4f1ea; --ink:#2d2a26; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:Georgia,"Times New Roman",serif; background:var(--bg); color:var(--ink); }
+  .wrap { max-width:680px; margin:0 auto; padding:40px 20px; }
+  h1 { font-size:28px; margin:0 0 6px; }
+  .sub { color:#777; margin:0 0 28px; font-style:italic; }
+  .card { background:#fff; border-radius:14px; padding:28px; box-shadow:0 6px 24px rgba(0,0,0,.08); }
+  #drop { border:2px dashed #c9c2b4; border-radius:12px; padding:44px 20px; text-align:center;
+          cursor:pointer; transition:.15s; }
+  #drop.hover { border-color:var(--brand); background:#eef4fb; }
+  #drop p { margin:8px 0; }
+  .hint { color:#999; font-size:14px; }
+  .row { display:flex; align-items:center; gap:10px; margin:20px 0 4px; flex-wrap:wrap; }
+  select { font:inherit; padding:8px 10px; border-radius:8px; border:1px solid #ccc; }
+  .bar { height:12px; background:#e7e2d7; border-radius:8px; overflow:hidden; margin-top:18px; display:none; }
+  .bar > div { height:100%; width:0; background:var(--brand); transition:width .3s; }
+  #msg { margin-top:12px; min-height:22px; font-size:15px; }
+  .btn { display:none; margin-top:20px; background:var(--brand); color:#fff; border:none;
+         padding:12px 22px; border-radius:10px; font:inherit; font-size:16px; cursor:pointer; }
+  .btn:hover { background:var(--brand-dark); }
+  .err { color:#b02a2a; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Dịch PDF sang Word song ngữ</h1>
+  <p class="sub">Anh – Việt · 1 câu Anh / 1 câu Việt · định dạng sách xuất bản</p>
+
+  <div class="card">
+    <div id="drop">
+      <p style="font-size:44px;margin:0">📄</p>
+      <p><strong>Kéo &amp; thả file PDF vào đây</strong></p>
+      <p class="hint">hoặc bấm để chọn file</p>
+      <input id="file" type="file" accept="application/pdf" hidden />
+    </div>
+
+    <div class="row">
+      <label for="engine">Bộ dịch:</label>
+      <select id="engine">
+        <option value="google">Google Translate (miễn phí)</option>
+        <option value="claude">Claude API (chất lượng cao)</option>
+      </select>
+    </div>
+
+    <div class="row">
+      <label for="layout">Trình bày:</label>
+      <select id="layout">
+        <option value="sentence">Từng câu (1 câu Anh / 1 câu Việt)</option>
+        <option value="paragraph">Từng đoạn (cả đoạn Anh rồi cả đoạn Việt)</option>
+      </select>
+    </div>
+
+    <div class="bar"><div id="fill"></div></div>
+    <div id="msg"></div>
+    <button class="btn" id="download">⬇️ Tải file Word về</button>
+  </div>
+</div>
+
+<script>
+const drop = document.getElementById('drop');
+const fileInput = document.getElementById('file');
+const engineSel = document.getElementById('engine');
+const layoutSel = document.getElementById('layout');
+const bar = document.querySelector('.bar');
+const fill = document.getElementById('fill');
+const msg = document.getElementById('msg');
+const dlBtn = document.getElementById('download');
+let currentJob = null;
+
+drop.addEventListener('click', () => fileInput.click());
+['dragover','dragenter'].forEach(e => drop.addEventListener(e, ev => { ev.preventDefault(); drop.classList.add('hover'); }));
+['dragleave','drop'].forEach(e => drop.addEventListener(e, ev => { ev.preventDefault(); drop.classList.remove('hover'); }));
+drop.addEventListener('drop', ev => { if (ev.dataTransfer.files.length) upload(ev.dataTransfer.files[0]); });
+fileInput.addEventListener('change', () => { if (fileInput.files.length) upload(fileInput.files[0]); });
+
+async function upload(file) {
+  if (!file.name.toLowerCase().endsWith('.pdf')) { setErr('Vui lòng chọn file .pdf'); return; }
+  dlBtn.style.display = 'none';
+  bar.style.display = 'block';
+  fill.style.width = '3%';
+  msg.className = '';
+  msg.textContent = 'Đang tải lên…';
+
+  const fd = new FormData();
+  fd.append('file', file);
+  fd.append('engine', engineSel.value);
+  fd.append('layout', layoutSel.value);
+  try {
+    const r = await fetch('/api/upload', { method:'POST', body:fd });
+    if (!r.ok) { setErr((await r.json()).detail || 'Lỗi tải lên'); return; }
+    currentJob = (await r.json()).job_id;
+    poll();
+  } catch (e) { setErr('Không kết nối được máy chủ'); }
+}
+
+async function poll() {
+  if (!currentJob) return;
+  try {
+    const r = await fetch('/api/status/' + currentJob);
+    const s = await r.json();
+    fill.style.width = Math.max(3, s.progress * 100) + '%';
+    msg.textContent = s.message;
+    if (s.status === 'error') { setErr(s.message); return; }
+    if (s.ready) {
+      fill.style.width = '100%';
+      dlBtn.style.display = 'inline-block';
+      dlBtn.onclick = () => location.href = '/api/download/' + currentJob;
+      return;
+    }
+    setTimeout(poll, 1200);
+  } catch (e) { setTimeout(poll, 2000); }
+}
+
+function setErr(t) { msg.className = 'err'; msg.textContent = t; }
+</script>
+</body>
+</html>
